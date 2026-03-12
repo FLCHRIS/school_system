@@ -12,3 +12,11 @@ build
 
 # OS
 .DS_Store
+
+# prisma
+prisma/dev.db
+prisma/*.db
+prisma/*.db-journal
+
+# logs
+*.log
