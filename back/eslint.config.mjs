@@ -1,0 +1,29 @@
+import js from "@eslint/js";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import prettier from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
+
+export default defineConfig([
+  {
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+    },
+    plugins: {
+      prettier,
+    },
+    rules: {
+      "prettier/prettier": "warn",
+    },
+    ignores: ["node_modules", "dist"],
+  },
+
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  prettierConfig,
+]);
