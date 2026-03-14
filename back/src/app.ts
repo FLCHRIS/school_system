@@ -1,3 +1,4 @@
+import { errorMiddleware } from "@/middlewares/error.middlewares";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
@@ -16,5 +17,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
+
+app.use(errorMiddleware);
 
 export default app;
