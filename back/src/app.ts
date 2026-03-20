@@ -2,13 +2,19 @@ import { errorMiddleware } from "@/middlewares/error.middlewares";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
-import PinoHttp from "pino-http";
 import express from "express";
+import morgan from "morgan";
 import cors from "cors";
 
 const app = express();
 
-app.use(PinoHttp({ logger, autoLogging: true }));
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message: string) => logger.info(message.trim()),
+    },
+  })
+);
 app.use(express.json());
 
 app.use(

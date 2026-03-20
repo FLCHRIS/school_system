@@ -5,11 +5,12 @@ import { logger } from "@/config/logger";
 
 export const errorMiddleware = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) => {
   if (error instanceof HttpError) {
+    logger.error(`${error.message} - ${error.detail ?? ""}`);
     return res.status(error.statusCode).json(
       createResponse({
         message: {
@@ -20,16 +21,16 @@ export const errorMiddleware = (
     );
   }
 
-  logger.error(
-    { err: error, path: req.path, method: req.method },
-    "Error no controlado"
-  );
+  const message = "Error interno en el servidor";
+  const detail = "No se pudo procesar la solicitud";
+
+  logger.error(`${message} - ${detail}`);
 
   return res.status(500).json(
     createResponse({
       message: {
-        title: "Error interno en el servidor",
-        detail: "No se pudo procesar la solicitud",
+        title: message,
+        detail: detail,
       },
     })
   );

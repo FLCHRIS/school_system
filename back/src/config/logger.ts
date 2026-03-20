@@ -1,16 +1,15 @@
-import pino from "pino";
-import { env } from "./env";
+import winston from "winston";
 
-const isDev = env.NODE_ENV === "development";
-
-export const logger = pino(
-  {
-    level: isDev ? "debug" : "info",
-  },
-  isDev
-    ? pino.transport({
-        target: "pino-pretty",
-        options: { colorize: true },
-      })
-    : undefined
-);
+export const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.printf(({ timestamp, level, message }) => {
+      return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+    })
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "logs/app.log" }),
+  ],
+});
