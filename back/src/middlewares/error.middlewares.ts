@@ -20,6 +20,7 @@ export const errorMiddleware = (
         message: {
           title: error.message,
           ...(error.detail && { detail: error.detail }),
+          ...(error.errors && { errors: error.errors }),
         },
       })
     );
