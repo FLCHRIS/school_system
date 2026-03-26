@@ -2,6 +2,8 @@ import { errorMiddleware } from "@/middlewares/error.middlewares";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
+import authRoter from "@/auth/router";
+
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -23,6 +25,8 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
+
+app.use("/api/auth", authRoter);
 
 app.use(errorMiddleware);
 
