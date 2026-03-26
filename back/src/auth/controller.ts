@@ -19,3 +19,19 @@ export const logIn = async (req: Request, res: Response) => {
     })
   );
 };
+
+export const getMe = async (req: Request, res: Response) => {
+  const user = req.user!;
+
+  const data = await service.getMe(user);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Información de usuario exitosa",
+        detail: "Se ha obtenido la información del usuario",
+      },
+      data,
+    })
+  );
+};

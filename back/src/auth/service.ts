@@ -1,4 +1,6 @@
 import { loginSchemaType } from "@/auth/schemas/login.schema";
+import { userSelectAll } from "@/auth/queries/userSelect";
+import { DecodedToken } from "@/types/auth.types";
 import { comparePassword } from "@/utils/bcrypt";
 import { HttpError } from "@/errors/http.error";
 import { signAccessToken } from "@/utils/jwt";
@@ -37,4 +39,29 @@ export const logIn = async (credentials: loginSchemaType) => {
   logger.info(`[AUTH] Usuario autenticado - ${credentials.username}`);
 
   return { token, expiresAt };
+};
+
+export const getMe = async (user: DecodedToken) => {
+  const data = await prisma.user.findUnique({
+    where: {
+      userId: user.userId,
+      statusId: USER_STATUS.ACTIVE,
+    },
+    select: userSelectAll,
+  });
+
+  if (!data) {
+    logger.warn(
+      `[AUTH] Información de usuario no encontrada - ${user.username}`
+    );
+    throw new HttpError(
+      401,
+      "No autorizado",
+      "Información de usuario no encontrada"
+    );
+  }
+
+  logger.info(`[AUTH] Información de usuario obtenida - ${user.username}`);
+
+  return data;
 };
