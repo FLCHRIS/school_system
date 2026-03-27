@@ -4,16 +4,11 @@ import { logger } from "@/config/logger";
 
 export const allowRolesMiddleware = (roles: number[]) => {
   return (req: Request, _res: Response, next: NextFunction) => {
-    if (!req.user) {
-      logger.warn(`[AUTH] Usuario no autenticado - ${req.method} ${req.path}`);
-      throw new HttpError(401, "No autorizado", "Usuario no autenticado");
-    }
+    const user = req.user!;
 
-    const roleId = req.user?.roleId;
-
-    if (!roles.includes(roleId)) {
+    if (!roles.includes(user.roleId)) {
       logger.warn(
-        `[AUTH] Accesso denegado (rol: ${roleId}) - ${req.method} ${req.path}`
+        `[AUTH] Accesso denegado (rol: ${user.roleId}) - ${req.method} ${req.path}`
       );
       throw new HttpError(
         403,
