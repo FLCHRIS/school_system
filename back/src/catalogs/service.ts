@@ -28,14 +28,7 @@ export const getCatalogs = async (
 };
 
 export const getCatalog = async (catalogId: number) => {
-  const catalogExists = await prisma.catalog.findUnique({
-    where: { catalogId },
-  });
-
-  if (!catalogExists) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogId}"`);
-    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
-  }
+  await catalogExists(catalogId);
 
   const data = await prisma.catalogItem.findMany({
     where: {
@@ -57,14 +50,7 @@ export const createCatalog = async (
   schema: CreateCatalogSchemaType,
   user: DecodedToken
 ) => {
-  const catalogExists = await prisma.catalog.findUnique({
-    where: { catalogId: schema.catalogId },
-  });
-
-  if (!catalogExists) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "${schema.catalogId}"`);
-    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
-  }
+  await catalogExists(schema.catalogId);
 
   await prisma.catalogItem.create({
     data: schema,
@@ -80,14 +66,7 @@ export const updateCatalog = async (
   schema: UpdateCatalogSchemaType,
   user: DecodedToken
 ) => {
-  const catalogItemExists = await prisma.catalogItem.findUnique({
-    where: { catalogItemId },
-  });
-
-  if (!catalogItemExists) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogItemId}"`);
-    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
-  }
+  await catalogItemExists(catalogItemId);
 
   await prisma.catalogItem.update({
     where: { catalogItemId },
@@ -97,4 +76,26 @@ export const updateCatalog = async (
   logger.info(
     `[CATALOG] Catálogo actualizado - "${schema.name}" por el usuario "${user.username}"`
   );
+};
+
+const catalogExists = async (catalogId: number) => {
+  const exists = await prisma.catalog.findUnique({
+    where: { catalogId },
+  });
+
+  if (!exists) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogId}"`);
+    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
+  }
+};
+
+const catalogItemExists = async (catalogItemId: number) => {
+  const exists = await prisma.catalogItem.findUnique({
+    where: { catalogItemId },
+  });
+
+  if (!exists) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogItemId}"`);
+    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
+  }
 };

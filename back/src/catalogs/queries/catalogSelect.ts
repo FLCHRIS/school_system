@@ -8,5 +8,8 @@ export const catalogSelectAll = {
       name: true,
       isActive: true,
     },
+    where: {
+      isActive: true,
+    },
   },
 };
