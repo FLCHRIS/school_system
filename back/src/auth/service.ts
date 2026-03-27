@@ -1,4 +1,4 @@
-import { loginSchemaType } from "@/auth/schemas/login.schema";
+import { LoginSchemaType } from "@/auth/schemas/login.schema";
 import { userSelectAll } from "@/auth/queries/userSelect";
 import { DecodedToken } from "@/types/auth.types";
 import { comparePassword } from "@/utils/bcrypt";
@@ -9,21 +9,21 @@ import { prisma } from "@/config/prisma";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
-export const logIn = async (credentials: loginSchemaType) => {
+export const logIn = async (schema: LoginSchemaType) => {
   const user = await prisma.user.findUnique({
     where: {
-      username: credentials.username,
+      username: schema.username,
       statusId: USER_STATUS.ACTIVE,
     },
   });
 
   if (!user) {
-    logger.warn(`[AUTH] Usuario no encontrado - ${credentials.username}`);
+    logger.warn(`[AUTH] Usuario no encontrado - ${schema.username}`);
     throw new HttpError(401, "No autorizado", "Usuario no encontrado");
   }
 
-  if (!(await comparePassword(credentials.password, user.password))) {
-    logger.warn(`[AUTH] Contraseña incorrecta - ${credentials.username}`);
+  if (!(await comparePassword(schema.password, user.password))) {
+    logger.warn(`[AUTH] Contraseña incorrecta - ${schema.username}`);
     throw new HttpError(401, "No autorizado", "Contraseña incorrecta");
   }
 
@@ -36,7 +36,7 @@ export const logIn = async (credentials: loginSchemaType) => {
 
   const expiresAt = Date.now() + env.JWT_EXPIRES_IN * 1000;
 
-  logger.info(`[AUTH] Usuario autenticado - ${credentials.username}`);
+  logger.info(`[AUTH] Usuario autenticado - ${schema.username}`);
 
   return { token, expiresAt };
 };

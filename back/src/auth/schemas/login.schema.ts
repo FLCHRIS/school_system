@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const loginSchema = z.object({
+export const LoginSchema = z.object({
   username: z
     .string()
     .trim()
@@ -13,4 +13,4 @@ export const loginSchema = z.object({
     .max(15, { error: "La contraseña debe ser menor a 15 caracteres" }),
 });
 
-export type loginSchemaType = z.infer<typeof loginSchema>;
+export type LoginSchemaType = z.infer<typeof LoginSchema>;
