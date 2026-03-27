@@ -1,5 +1,5 @@
 import { CatalogFiltersSchemaType } from "@/catalogs/schemas/queryCatalog.schema";
-import { Prisma } from "prisma/prisma-client";
+import { Prisma } from "@prisma/client";
 
 export const buildCatalogFilter = (
   schema: CatalogFiltersSchemaType

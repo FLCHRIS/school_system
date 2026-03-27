@@ -1,11 +1,12 @@
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
+import { isForeignKeyError } from "@/errors/prisma.error";
 import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
-import { Prisma } from "prisma/prisma-client";
 import { logger } from "@/config/logger";
 import { prisma } from "@/config/prisma";
+import { Prisma } from "@prisma/client";
 
 export const getCatalogs = async (
   filter: Prisma.CatalogWhereInput,
@@ -78,6 +79,27 @@ export const updateCatalog = async (
   );
 };
 
+export const deleteCatalog = async (
+  catalogItemId: number,
+  user: DecodedToken
+) => {
+  await catalogItemExists(catalogItemId);
+
+  try {
+    await prisma.catalogItem.delete({
+      where: { catalogItemId },
+    });
+
+    logger.info(
+      `[CATALOG] Catálogo eliminado - "${catalogItemId}" por el usuario "${user.username}"`
+    );
+  } catch (error) {
+    if (!isForeignKeyError(error)) throw error;
+
+    await inactivateCatalog(catalogItemId, user);
+  }
+};
+
 const catalogExists = async (catalogId: number) => {
   const exists = await prisma.catalog.findUnique({
     where: { catalogId },
@@ -98,4 +120,15 @@ const catalogItemExists = async (catalogItemId: number) => {
     logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogItemId}"`);
     throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
   }
+};
+
+const inactivateCatalog = async (catalogItemId: number, user: DecodedToken) => {
+  await prisma.catalogItem.update({
+    where: { catalogItemId },
+    data: { isActive: false },
+  });
+
+  logger.info(
+    `[CATALOG] Catálogo inactivado - "${catalogItemId}" por el usuario "${user.username}"`
+  );
 };

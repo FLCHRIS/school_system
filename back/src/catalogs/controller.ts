@@ -82,3 +82,19 @@ export const updateCatalog = async (req: Request, res: Response) => {
     })
   );
 };
+
+export const deleteCatalog = async (req: Request, res: Response) => {
+  const catalogItemId = Number(req.params.id);
+  const user = req.user!;
+
+  await service.deleteCatalog(catalogItemId, user);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Catálogo eliminado correctamente",
+        detail: "Se ha eliminado el catálogo",
+      },
+    })
+  );
+};

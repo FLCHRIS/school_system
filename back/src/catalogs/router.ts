@@ -25,5 +25,11 @@ router.put(
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
   controller.updateCatalog
 );
+router.delete(
+  "/:id",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR]),
+  controller.deleteCatalog
+);
 
 export default router;
