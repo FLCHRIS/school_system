@@ -28,7 +28,7 @@ export const getMe = async (req: Request, res: Response) => {
   return res.status(200).json(
     createResponse({
       message: {
-        title: "Información de usuario exitosa",
+        title: "Usuario obtenido correctamente",
         detail: "Se ha obtenido la información del usuario",
       },
       data,
