@@ -2,6 +2,7 @@ import { errorMiddleware } from "@/middlewares/error.middlewares";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
+import catalogRouter from "@/catalogs/router";
 import authRoter from "@/auth/router";
 
 import express from "express";
@@ -27,6 +28,7 @@ app.use(
 );
 
 app.use("/api/auth", authRoter);
+app.use("/api/catalogs", catalogRouter);
 
 app.use(errorMiddleware);
 
