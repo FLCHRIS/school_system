@@ -1,3 +1,4 @@
+import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
 import { HttpError } from "@/errors/http.error";
 import { Prisma } from "prisma/prisma-client";
 import { logger } from "@/config/logger";
@@ -10,9 +11,10 @@ export const getCatalogs = async (
 ) => {
   const [data, total] = await Promise.all([
     prisma.catalog.findMany({
-      where: filter,
-      skip,
       take,
+      skip,
+      where: filter,
+      select: catalogSelectAll,
     }),
     prisma.catalog.count({ where: filter }),
   ]);
