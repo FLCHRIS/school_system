@@ -27,7 +27,6 @@ model Catalog {
 model CatalogItem {
   catalogItemId Int     @id @default(autoincrement())
   name          String
-  order         Int
   isActive      Boolean @default(true)
 
   catalogId Int

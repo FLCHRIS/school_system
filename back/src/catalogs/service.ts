@@ -30,9 +30,6 @@ export const getCatalog = async (catalogId: number) => {
       catalogId,
       isActive: true,
     },
-    orderBy: {
-      order: "asc",
-    },
     select: {
       catalogItemId: true,
       name: true,
