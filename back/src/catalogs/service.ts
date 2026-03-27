@@ -1,6 +1,7 @@
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
-import { DecodedToken } from "@/types/auth.types";
+import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
+import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { Prisma } from "prisma/prisma-client";
 import { logger } from "@/config/logger";
@@ -66,13 +67,34 @@ export const createCatalog = async (
   }
 
   await prisma.catalogItem.create({
-    data: {
-      catalogId: schema.catalogId,
-      name: schema.name,
-    },
+    data: schema,
   });
 
   logger.info(
     `[CATALOG] Catálogo creado - "${schema.name}" por el usuario "${user.username}"`
+  );
+};
+
+export const updateCatalog = async (
+  catalogItemId: number,
+  schema: UpdateCatalogSchemaType,
+  user: DecodedToken
+) => {
+  const catalogItemExists = await prisma.catalogItem.findUnique({
+    where: { catalogItemId },
+  });
+
+  if (!catalogItemExists) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogItemId}"`);
+    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
+  }
+
+  await prisma.catalogItem.update({
+    where: { catalogItemId },
+    data: schema,
+  });
+
+  logger.info(
+    `[CATALOG] Catálogo actualizado - "${schema.name}" por el usuario "${user.username}"`
   );
 };

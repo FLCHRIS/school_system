@@ -1,7 +1,8 @@
+import { CreateCatalogSchema } from "@/catalogs/schemas/createCatalog.schema";
+import { UpdateCatalogSchema } from "@/catalogs/schemas/updateCatalog.schema";
 import { QueryCatalogSchema } from "@/catalogs/schemas/queryCatalog.schema";
+import { buildCatalogFilter } from "@/catalogs/utils/buildCatalogFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { CreateCatalogSchema } from "./schemas/createCatalog.schema";
-import { buildCatalogFilter } from "./utils/buildCatalogFilter";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/catalogs/service";
@@ -60,6 +61,23 @@ export const createCatalog = async (req: Request, res: Response) => {
       message: {
         title: "Catálogo creado correctamente",
         detail: "Se ha creado el catálogo",
+      },
+    })
+  );
+};
+
+export const updateCatalog = async (req: Request, res: Response) => {
+  const schema = validateSchema(UpdateCatalogSchema, req.body);
+  const catalogItemId = Number(req.params.id);
+  const user = req.user!;
+
+  await service.updateCatalog(catalogItemId, schema, user);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Catálogo actualizado correctamente",
+        detail: "Se ha actualizado el catálogo",
       },
     })
   );

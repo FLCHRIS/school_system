@@ -19,5 +19,11 @@ router.post(
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
   controller.createCatalog
 );
+router.put(
+  "/:id",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR]),
+  controller.updateCatalog
+);
 
 export default router;
