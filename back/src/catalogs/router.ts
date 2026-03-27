@@ -13,5 +13,11 @@ router.get(
   controller.getCatalogs
 );
 router.get("/:id", controller.getCatalog);
+router.post(
+  "/",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR]),
+  controller.createCatalog
+);
 
 export default router;

@@ -18,12 +18,12 @@ export const logIn = async (schema: LoginSchemaType) => {
   });
 
   if (!user) {
-    logger.warn(`[AUTH] Usuario no encontrado - ${schema.username}`);
+    logger.warn(`[AUTH] Usuario no encontrado - "${schema.username}"`);
     throw new HttpError(401, "No autorizado", "Usuario no encontrado");
   }
 
   if (!(await comparePassword(schema.password, user.password))) {
-    logger.warn(`[AUTH] Contraseña incorrecta - ${schema.username}`);
+    logger.warn(`[AUTH] Contraseña incorrecta - "${schema.username}"`);
     throw new HttpError(401, "No autorizado", "Contraseña incorrecta");
   }
 
@@ -36,7 +36,7 @@ export const logIn = async (schema: LoginSchemaType) => {
 
   const expiresAt = Date.now() + env.JWT_EXPIRES_IN * 1000;
 
-  logger.info(`[AUTH] Usuario autenticado - ${schema.username}`);
+  logger.info(`[AUTH] Usuario autenticado - "${schema.username}"`);
 
   return { token, expiresAt };
 };
@@ -52,7 +52,7 @@ export const getMe = async (user: DecodedToken) => {
 
   if (!data) {
     logger.warn(
-      `[AUTH] Información de usuario no encontrada - ${user.username}`
+      `[AUTH] Información de usuario no encontrada - "${user.username}"`
     );
     throw new HttpError(
       401,
@@ -61,7 +61,7 @@ export const getMe = async (user: DecodedToken) => {
     );
   }
 
-  logger.info(`[AUTH] Información de usuario obtenida - ${user.username}`);
+  logger.info(`[AUTH] Información de usuario obtenida - "${user.username}"`);
 
   return data;
 };

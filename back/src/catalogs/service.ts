@@ -1,3 +1,5 @@
+import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
+import { DecodedToken } from "@/types/auth.types";
 import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
 import { HttpError } from "@/errors/http.error";
 import { Prisma } from "prisma/prisma-client";
@@ -19,12 +21,21 @@ export const getCatalogs = async (
     prisma.catalog.count({ where: filter }),
   ]);
 
-  logger.info(`[CATALOG] Catálogos obtenidos - ${total}`);
+  logger.info(`[CATALOG] Catálogos obtenidos - "${total}"`);
 
   return { data, total };
 };
 
 export const getCatalog = async (catalogId: number) => {
+  const catalogExists = await prisma.catalog.findUnique({
+    where: { catalogId },
+  });
+
+  if (!catalogExists) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogId}"`);
+    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
+  }
+
   const data = await prisma.catalogItem.findMany({
     where: {
       catalogId,
@@ -36,12 +47,32 @@ export const getCatalog = async (catalogId: number) => {
     },
   });
 
-  if (!data.length) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - ${catalogId}`);
+  logger.info(`[CATALOG] Catálogo obtenido - "${catalogId}"`);
+
+  return data;
+};
+
+export const createCatalog = async (
+  schema: CreateCatalogSchemaType,
+  user: DecodedToken
+) => {
+  const catalogExists = await prisma.catalog.findUnique({
+    where: { catalogId: schema.catalogId },
+  });
+
+  if (!catalogExists) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "${schema.catalogId}"`);
     throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
   }
 
-  logger.info(`[CATALOG] Catálogo obtenido - ${catalogId}`);
+  await prisma.catalogItem.create({
+    data: {
+      catalogId: schema.catalogId,
+      name: schema.name,
+    },
+  });
 
-  return data;
+  logger.info(
+    `[CATALOG] Catálogo creado - "${schema.name}" por el usuario "${user.username}"`
+  );
 };

@@ -1,5 +1,6 @@
 import { QueryCatalogSchema } from "@/catalogs/schemas/queryCatalog.schema";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
+import { CreateCatalogSchema } from "./schemas/createCatalog.schema";
 import { buildCatalogFilter } from "./utils/buildCatalogFilter";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
@@ -44,6 +45,22 @@ export const getCatalog = async (req: Request, res: Response) => {
         detail: "Se ha obtenido el catálogo",
       },
       data,
+    })
+  );
+};
+
+export const createCatalog = async (req: Request, res: Response) => {
+  const schema = validateSchema(CreateCatalogSchema, req.body);
+  const user = req.user!;
+
+  await service.createCatalog(schema, user);
+
+  return res.status(201).json(
+    createResponse({
+      message: {
+        title: "Catálogo creado correctamente",
+        detail: "Se ha creado el catálogo",
+      },
     })
   );
 };
