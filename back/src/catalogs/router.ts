@@ -6,7 +6,12 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/", controller.getCatalogs);
+router.get(
+  "/",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR]),
+  controller.getCatalogs
+);
 router.get("/:id", controller.getCatalog);
 
 export default router;
