@@ -12,24 +12,25 @@ router.get(
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
   controller.getCatalogs
 );
-router.get("/:id", controller.getCatalog);
+
+router.get("/:catalogId/items", controller.getCatalogItems);
 router.post(
-  "/",
+  "/:catalogId/items",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
-  controller.createCatalog
+  controller.createCatalogItem
 );
 router.put(
-  "/:id",
+  "/:catalogId/items/:catalogItemId",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
-  controller.updateCatalog
+  controller.updateCatalogItem
 );
 router.delete(
-  "/:id",
+  "/:catalogId/items/:catalogItemId",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
-  controller.deleteCatalog
+  controller.deleteCatalogItem
 );
 
 export default router;

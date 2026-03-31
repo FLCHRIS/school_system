@@ -34,10 +34,10 @@ export const getCatalogs = async (req: Request, res: Response) => {
   );
 };
 
-export const getCatalog = async (req: Request, res: Response) => {
-  const catalogId = Number(req.params.id);
+export const getCatalogItems = async (req: Request, res: Response) => {
+  const catalogId = Number(req.params.catalogId);
 
-  const data = await service.getCatalog(catalogId);
+  const data = await service.getCatalogItems(catalogId);
 
   return res.status(200).json(
     createResponse({
@@ -50,11 +50,12 @@ export const getCatalog = async (req: Request, res: Response) => {
   );
 };
 
-export const createCatalog = async (req: Request, res: Response) => {
+export const createCatalogItem = async (req: Request, res: Response) => {
   const schema = validateSchema(CreateCatalogSchema, req.body);
+  const catalogId = Number(req.params.catalogId);
   const user = req.user!;
 
-  await service.createCatalog(schema, user);
+  await service.createCatalogItem(catalogId, schema, user);
 
   return res.status(201).json(
     createResponse({
@@ -66,12 +67,13 @@ export const createCatalog = async (req: Request, res: Response) => {
   );
 };
 
-export const updateCatalog = async (req: Request, res: Response) => {
+export const updateCatalogItem = async (req: Request, res: Response) => {
   const schema = validateSchema(UpdateCatalogSchema, req.body);
-  const catalogItemId = Number(req.params.id);
+  const catalogItemId = Number(req.params.catalogItemId);
+  const catalogId = Number(req.params.catalogId);
   const user = req.user!;
 
-  await service.updateCatalog(catalogItemId, schema, user);
+  await service.updateCatalogItem(catalogId, catalogItemId, schema, user);
 
   return res.status(200).json(
     createResponse({
@@ -83,11 +85,12 @@ export const updateCatalog = async (req: Request, res: Response) => {
   );
 };
 
-export const deleteCatalog = async (req: Request, res: Response) => {
-  const catalogItemId = Number(req.params.id);
+export const deleteCatalogItem = async (req: Request, res: Response) => {
+  const catalogItemId = Number(req.params.catalogItemId);
+  const catalogId = Number(req.params.catalogId);
   const user = req.user!;
 
-  await service.deleteCatalog(catalogItemId, user);
+  await service.deleteCatalogItem(catalogId, catalogItemId, user);
 
   return res.status(200).json(
     createResponse({

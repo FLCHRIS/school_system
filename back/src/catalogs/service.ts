@@ -1,11 +1,10 @@
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
-import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
 import { isForeignKeyError } from "@/errors/prisma.error";
+import * as repository from "@/catalogs/repository";
 import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
-import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
 export const getCatalogs = async (
@@ -13,82 +12,61 @@ export const getCatalogs = async (
   skip: number,
   take: number
 ) => {
-  const [data, total] = await Promise.all([
-    prisma.catalog.findMany({
-      take,
-      skip,
-      where: filter,
-      select: catalogSelectAll,
-    }),
-    prisma.catalog.count({ where: filter }),
-  ]);
+  const data = await repository.getCatalogs(filter, skip, take);
 
-  logger.info(`[CATALOG] Catálogos obtenidos - "${total}"`);
+  logger.info(`[CATALOG] Catálogos obtenidos - "${data.total}"`);
 
-  return { data, total };
+  return data;
 };
 
-export const getCatalog = async (catalogId: number) => {
+export const getCatalogItems = async (catalogId: number) => {
   await catalogExists(catalogId);
 
-  const data = await prisma.catalogItem.findMany({
-    where: {
-      catalogId,
-      isActive: true,
-    },
-    select: {
-      catalogItemId: true,
-      name: true,
-    },
-  });
+  const data = await repository.getCatalogItems(catalogId);
 
   logger.info(`[CATALOG] Catálogo obtenido - "${catalogId}"`);
 
   return data;
 };
 
-export const createCatalog = async (
+export const createCatalogItem = async (
+  catalogId: number,
   schema: CreateCatalogSchemaType,
   user: DecodedToken
 ) => {
-  await catalogExists(schema.catalogId);
+  await catalogExists(catalogId);
 
-  await prisma.catalogItem.create({
-    data: schema,
-  });
+  await repository.createCatalogItem(catalogId, schema);
 
   logger.info(
     `[CATALOG] Catálogo creado - "${schema.name}" por el usuario "${user.username}"`
   );
 };
 
-export const updateCatalog = async (
+export const updateCatalogItem = async (
+  catalogId: number,
   catalogItemId: number,
   schema: UpdateCatalogSchemaType,
   user: DecodedToken
 ) => {
-  await catalogItemExists(catalogItemId);
+  await catalogItemExists(catalogId, catalogItemId);
 
-  await prisma.catalogItem.update({
-    where: { catalogItemId },
-    data: schema,
-  });
+  await repository.updateCatalogItem(catalogItemId, schema);
 
   logger.info(
     `[CATALOG] Catálogo actualizado - "${schema.name}" por el usuario "${user.username}"`
   );
 };
 
-export const deleteCatalog = async (
+export const deleteCatalogItem = async (
+  catalogId: number,
   catalogItemId: number,
   user: DecodedToken
 ) => {
-  await catalogItemExists(catalogItemId);
+  await catalogItemExists(catalogId, catalogItemId);
 
   try {
-    await prisma.catalogItem.delete({
-      where: { catalogItemId },
-    });
+    await repository.deleteCatalogItem(catalogItemId);
 
     logger.info(
       `[CATALOG] Catálogo eliminado - "${catalogItemId}" por el usuario "${user.username}"`
@@ -96,39 +74,28 @@ export const deleteCatalog = async (
   } catch (error) {
     if (!isForeignKeyError(error)) throw error;
 
-    await inactivateCatalog(catalogItemId, user);
+    await repository.inactivateCatalogItem(catalogItemId);
+
+    logger.info(
+      `[CATALOG] Catálogo inactivado - "${catalogItemId}" por el usuario "${user.username}"`
+    );
   }
 };
 
 const catalogExists = async (catalogId: number) => {
-  const exists = await prisma.catalog.findUnique({
-    where: { catalogId },
-  });
+  const data = await repository.getCatalog(catalogId);
 
-  if (!exists) {
+  if (!data) {
     logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogId}"`);
     throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
   }
 };
 
-const catalogItemExists = async (catalogItemId: number) => {
-  const exists = await prisma.catalogItem.findUnique({
-    where: { catalogItemId },
-  });
+const catalogItemExists = async (catalogId: number, catalogItemId: number) => {
+  const data = await repository.getCatalogItem(catalogId, catalogItemId);
 
-  if (!exists) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogItemId}"`);
+  if (!data) {
+    logger.warn(`[CATALOG] Catálogo no encontrado - "catalog${catalogItemId}"`);
     throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
   }
-};
-
-const inactivateCatalog = async (catalogItemId: number, user: DecodedToken) => {
-  await prisma.catalogItem.update({
-    where: { catalogItemId },
-    data: { isActive: false },
-  });
-
-  logger.info(
-    `[CATALOG] Catálogo inactivado - "${catalogItemId}" por el usuario "${user.username}"`
-  );
 };
