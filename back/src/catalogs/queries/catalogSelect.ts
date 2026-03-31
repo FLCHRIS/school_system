@@ -12,4 +12,4 @@ export const catalogSelectAll = {
       isActive: true,
     },
   },
-};
+} as const;

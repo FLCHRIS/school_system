@@ -41,4 +41,12 @@ export const userSelectAll = {
       url: true,
     },
   },
-};
+} as const;
+
+export const userSelectLogIn = {
+  username: true,
+  password: true,
+  statusId: true,
+  userId: true,
+  roleId: true,
+} as const;

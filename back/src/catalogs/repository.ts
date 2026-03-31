@@ -23,15 +23,13 @@ export const getCatalogs = async (
 };
 
 export const getCatalog = async (catalogId: number) => {
-  const data = await prisma.catalog.findUnique({
+  return await prisma.catalog.findUnique({
     where: { catalogId },
   });
-
-  return data;
 };
 
 export const getCatalogItems = async (catalogId: number) => {
-  const data = await prisma.catalogItem.findMany({
+  return await prisma.catalogItem.findMany({
     where: {
       catalogId,
       isActive: true,
@@ -41,23 +39,19 @@ export const getCatalogItems = async (catalogId: number) => {
       name: true,
     },
   });
-
-  return data;
 };
 
 export const getCatalogItem = async (
   catalogId: number,
   catalogItemId: number
 ) => {
-  const data = await prisma.catalogItem.findFirst({
+  return await prisma.catalogItem.findFirst({
     where: { catalogItemId, catalogId },
     select: {
       catalogItemId: true,
       name: true,
     },
   });
-
-  return data;
 };
 
 export const createCatalogItem = async (
