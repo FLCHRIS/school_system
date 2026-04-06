@@ -39,6 +39,7 @@ model CatalogItem {
   usersWithRole           User[]         @relation("UserRole")
   usersWithStatus         User[]         @relation("UserStatus")
   personalInfosWithGender PersonalInfo[] @relation("Gender")
+  studentsWithStatus      Student[]      @relation("StudentStatus")
 }
 
 model PersonalInfo {
@@ -94,10 +95,77 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  student  Student?
+  teacher  Teacher?
+  guardian Guardian?
+
   role   CatalogItem @relation("UserRole", fields: [roleId], references: [catalogItemId])
   status CatalogItem @relation("UserStatus", fields: [statusId], references: [catalogItemId])
 
   personalInfo PersonalInfo  @relation(fields: [personalInfoId], references: [personalInfoId])
   contactInfo  ContactInfo   @relation(fields: [contactInfoId], references: [contactInfoId])
   profilePhoto ProfilePhoto? @relation(fields: [profilePhotoId], references: [profilePhotoId])
+}
+
+model Address {
+  addressId Int @id @default(autoincrement())
+
+  street       String
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  reference    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guardians Guardian[]
+  students  Student[]
+}
+
+model Guardian {
+  guardianId Int @id @default(autoincrement())
+
+  userId    Int @unique
+  addressId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students Student[]
+
+  user    User    @relation(fields: [userId], references: [userId])
+  address Address @relation(fields: [addressId], references: [addressId])
+}
+
+model Student {
+  studentId Int @id @default(autoincrement())
+
+  userId          Int @unique
+  addressId       Int
+  guardianId      Int
+  studentStatusId Int
+
+  enrollmentNumber String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [userId])
+  address  Address  @relation(fields: [addressId], references: [addressId])
+  guardian Guardian @relation(fields: [guardianId], references: [guardianId])
+
+  status CatalogItem @relation("StudentStatus", fields: [studentStatusId], references: [catalogItemId])
+}
+
+model Teacher {
+  teacherId Int @id @default(autoincrement())
+
+  userId Int @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [userId])
 }
