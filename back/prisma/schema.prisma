@@ -36,6 +36,8 @@ model CatalogItem {
 
   catalog Catalog @relation(fields: [catalogId], references: [catalogId])
 
+  enrollmentsWithGrade      Enrollment[]       @relation("EnrollmentGrade")
+  enrollmentsWithGroup      Enrollment[]       @relation("EnrollmentGroup")
   usersWithRole             User[]             @relation("UserRole")
   usersWithStatus           User[]             @relation("UserStatus")
   personalInfosWithGender   PersonalInfo[]     @relation("Gender")
@@ -155,7 +157,8 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  documents StudentDocument[]
+  documents   StudentDocument[]
+  enrollments Enrollment[]
 
   user     User     @relation(fields: [userId], references: [userId])
   address  Address  @relation(fields: [addressId], references: [addressId])
@@ -205,4 +208,35 @@ model GuardianDocument {
 
   guardian Guardian    @relation(fields: [guardianId], references: [guardianId])
   type     CatalogItem @relation("GuardianDocumentType", fields: [documentTypeId], references: [catalogItemId])
+}
+
+model SchoolCycle {
+  schoolCycleId Int @id @default(autoincrement())
+
+  name      String
+  startDate DateTime
+  endDate   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  enrollmentId Int @id @default(autoincrement())
+
+  schoolCycleId Int
+  studentId     Int
+  gradeId       Int
+  groupId       Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student     Student     @relation(fields: [studentId], references: [studentId])
+  schoolCycle SchoolCycle @relation(fields: [schoolCycleId], references: [schoolCycleId])
+
+  grade CatalogItem @relation("EnrollmentGrade", fields: [gradeId], references: [catalogItemId])
+  group CatalogItem @relation("EnrollmentGroup", fields: [groupId], references: [catalogItemId])
 }
