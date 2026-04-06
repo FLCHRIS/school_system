@@ -36,14 +36,18 @@ model CatalogItem {
 
   catalog Catalog @relation(fields: [catalogId], references: [catalogId])
 
-  enrollmentsWithGrade      Enrollment[]       @relation("EnrollmentGrade")
-  enrollmentsWithGroup      Enrollment[]       @relation("EnrollmentGroup")
-  usersWithRole             User[]             @relation("UserRole")
-  usersWithStatus           User[]             @relation("UserStatus")
-  personalInfosWithGender   PersonalInfo[]     @relation("Gender")
-  studentsWithStatus        Student[]          @relation("StudentStatus")
-  studentDocumentsWithType  StudentDocument[]  @relation("StudentDocumentType")
-  guardianDocumentsWithType GuardianDocument[] @relation("GuardianDocumentType")
+  enrollmentsWithStatus       Enrollment[]        @relation("EnrollmentStatus")
+  reportCardsWithStatus       ReportCard[]        @relation("ReportCardStatus")
+  enrollmentsWithGrade        Enrollment[]        @relation("EnrollmentGrade")
+  enrollmentsWithGroup        Enrollment[]        @relation("EnrollmentGroup")
+  usersWithRole               User[]              @relation("UserRole")
+  usersWithStatus             User[]              @relation("UserStatus")
+  personalInfosWithGender     PersonalInfo[]      @relation("Gender")
+  studentsWithStatus          Student[]           @relation("StudentStatus")
+  studentDocumentsWithType    StudentDocument[]   @relation("StudentDocumentType")
+  guardianDocumentsWithType   GuardianDocument[]  @relation("GuardianDocumentType")
+  teacherAssignmentsWithGrade TeacherAssignment[] @relation("TeacherAssignmentGrade")
+  teacherAssignmentsWithGroup TeacherAssignment[] @relation("TeacherAssignmentGroup")
 }
 
 model PersonalInfo {
@@ -109,6 +113,8 @@ model User {
   personalInfo PersonalInfo  @relation(fields: [personalInfoId], references: [personalInfoId])
   contactInfo  ContactInfo   @relation(fields: [contactInfoId], references: [contactInfoId])
   profilePhoto ProfilePhoto? @relation(fields: [profilePhotoId], references: [profilePhotoId])
+
+  generatedReportCards ReportCard[] @relation("UserGeneratedReportCards")
 }
 
 model Address {
@@ -175,6 +181,9 @@ model Teacher {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  assignments  TeacherAssignment[]
+  gradeRecords GradeRecord[]
+
   user User @relation(fields: [userId], references: [userId])
 }
 
@@ -220,23 +229,128 @@ model SchoolCycle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enrollments Enrollment[]
+  enrollments        Enrollment[]
+  evaluationPeriods  EvaluationPeriod[]
+  teacherAssignments TeacherAssignment[]
 }
 
 model Enrollment {
   enrollmentId Int @id @default(autoincrement())
 
+  schoolCycleId      Int
+  studentId          Int
+  gradeId            Int
+  groupId            Int
+  enrollmentStatusId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gradeRecords GradeRecord[]
+  reportCards  ReportCard[]
+
+  student     Student     @relation(fields: [studentId], references: [studentId])
+  schoolCycle SchoolCycle @relation(fields: [schoolCycleId], references: [schoolCycleId])
+
+  grade  CatalogItem @relation("EnrollmentGrade", fields: [gradeId], references: [catalogItemId])
+  group  CatalogItem @relation("EnrollmentGroup", fields: [groupId], references: [catalogItemId])
+  status CatalogItem @relation("EnrollmentStatus", fields: [enrollmentStatusId], references: [catalogItemId])
+
+  @@unique([studentId, schoolCycleId])
+}
+
+model Subject {
+  subjectId Int @id @default(autoincrement())
+
+  name        String
+  code        String  @unique
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacherAssignments TeacherAssignment[]
+  gradeRecords       GradeRecord[]
+}
+
+model TeacherAssignment {
+  teacherAssignmentId Int @id @default(autoincrement())
+
+  teacherId     Int
+  subjectId     Int
   schoolCycleId Int
-  studentId     Int
   gradeId       Int
   groupId       Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student     Student     @relation(fields: [studentId], references: [studentId])
+  teacher     Teacher     @relation(fields: [teacherId], references: [teacherId])
+  subject     Subject     @relation(fields: [subjectId], references: [subjectId])
   schoolCycle SchoolCycle @relation(fields: [schoolCycleId], references: [schoolCycleId])
 
-  grade CatalogItem @relation("EnrollmentGrade", fields: [gradeId], references: [catalogItemId])
-  group CatalogItem @relation("EnrollmentGroup", fields: [groupId], references: [catalogItemId])
+  grade CatalogItem @relation("TeacherAssignmentGrade", fields: [gradeId], references: [catalogItemId])
+  group CatalogItem @relation("TeacherAssignmentGroup", fields: [groupId], references: [catalogItemId])
+
+  @@unique([teacherId, subjectId, schoolCycleId, gradeId, groupId])
+}
+
+model GradeRecord {
+  gradeRecordId Int @id @default(autoincrement())
+
+  enrollmentId       Int
+  subjectId          Int
+  teacherId          Int
+  evaluationPeriodId Int
+
+  score          Float
+  evaluationDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subject          Subject          @relation(fields: [subjectId], references: [subjectId])
+  teacher          Teacher          @relation(fields: [teacherId], references: [teacherId])
+  enrollment       Enrollment       @relation(fields: [enrollmentId], references: [enrollmentId])
+  evaluationPeriod EvaluationPeriod @relation(fields: [evaluationPeriodId], references: [evaluationPeriodId])
+}
+
+model ReportCard {
+  reportCardId Int @id @default(autoincrement())
+
+  enrollmentId       Int
+  statusId           Int
+  generatedBy        Int
+  evaluationPeriodId Int
+
+  generationDate DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollment       Enrollment       @relation(fields: [enrollmentId], references: [enrollmentId])
+  evaluationPeriod EvaluationPeriod @relation(fields: [evaluationPeriodId], references: [evaluationPeriodId])
+
+  user   User        @relation("UserGeneratedReportCards", fields: [generatedBy], references: [userId])
+  status CatalogItem @relation("ReportCardStatus", fields: [statusId], references: [catalogItemId])
+}
+
+model EvaluationPeriod {
+  evaluationPeriodId Int @id @default(autoincrement())
+
+  schoolCycleId Int
+
+  name      String
+  startDate DateTime?
+  endDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gradeRecords GradeRecord[]
+  reportCards  ReportCard[]
+
+  schoolCycle SchoolCycle @relation(fields: [schoolCycleId], references: [schoolCycleId])
+
+  @@unique([schoolCycleId, name])
 }
