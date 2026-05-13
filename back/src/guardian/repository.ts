@@ -1,14 +1,7 @@
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
-import { guardianSelectAll } from "@/guardian/queries/guardianSelect";
+import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
 import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
-
-export const getGuardian = async (guardianId: number) => {
-  return await prisma.guardian.findUnique({
-    where: { guardianId },
-    select: guardianSelectAll,
-  });
-};
 
 export const createGuardian = async (data: CreateGuardianSchemaType) => {
   return await prisma.guardian.create({
@@ -46,5 +39,12 @@ export const createGuardian = async (data: CreateGuardianSchemaType) => {
         },
       },
     },
+  });
+};
+
+export const existsGuardian = async (guardianId: number) => {
+  return await prisma.guardian.findUnique({
+    where: { guardianId },
+    select: existsGuardianQuery,
   });
 };
