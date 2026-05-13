@@ -82,7 +82,7 @@ export const deleteCatalogItem = async (
   }
 };
 
-const catalogExists = async (catalogId: number) => {
+export const catalogExists = async (catalogId: number) => {
   const data = await repository.getCatalog(catalogId);
 
   if (!data) {
@@ -91,7 +91,10 @@ const catalogExists = async (catalogId: number) => {
   }
 };
 
-const catalogItemExists = async (catalogId: number, catalogItemId: number) => {
+export const catalogItemExists = async (
+  catalogId: number,
+  catalogItemId: number
+) => {
   const data = await repository.getCatalogItem(catalogId, catalogItemId);
 
   if (!data) {

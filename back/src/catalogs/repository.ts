@@ -58,21 +58,21 @@ export const createCatalogItem = async (
   catalogId: number,
   data: CreateCatalogSchemaType
 ) => {
-  await prisma.catalogItem.create({ data: { catalogId, ...data } });
+  return await prisma.catalogItem.create({ data: { catalogId, ...data } });
 };
 
 export const updateCatalogItem = async (
   catalogItemId: number,
   data: UpdateCatalogSchemaType
 ) => {
-  await prisma.catalogItem.update({
+  return await prisma.catalogItem.update({
     where: { catalogItemId },
     data,
   });
 };
 
 export const deleteCatalogItem = async (catalogItemId: number) => {
-  await prisma.catalogItem.delete({
+  return await prisma.catalogItem.delete({
     where: { catalogItemId },
   });
 };
