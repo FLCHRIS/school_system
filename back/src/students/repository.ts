@@ -1,7 +1,16 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
+import { existsStudentQuery } from "@/students/queries/existsStudent";
+import { searchStudentQuery } from "@/students/queries/searchStudent";
 import { STUDENT_STATUS } from "@/students/constants";
 import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
+
+export const getStudent = async (studentId: number) => {
+  return await prisma.student.findUnique({
+    where: { studentId },
+    select: searchStudentQuery,
+  });
+};
 
 export const createStudent = async (
   data: StudentWithExistingGuardianSchemaType
@@ -45,6 +54,13 @@ export const createStudent = async (
         connect: { guardianId: data.guardianId },
       },
     },
+  });
+};
+
+export const existsStudent = async (studentId: number) => {
+  return await prisma.student.findUnique({
+    where: { studentId },
+    select: existsStudentQuery,
   });
 };
 

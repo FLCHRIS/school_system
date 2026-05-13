@@ -5,11 +5,22 @@ import {
 import * as studentRepository from "@/students/repository";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import { DecodedToken } from "@/types/auth.types";
+import { HttpError } from "@/errors/http.error";
 import { SCHOOL_CODE } from "@/constants";
 import { logger } from "@/config/logger";
 
 import * as guardianRepository from "@/guardian/repository";
 import * as guardianService from "@/guardian/service";
+
+export const getStudent = async (studentId: number) => {
+  await existsStudent(studentId);
+
+  const data = await studentRepository.getStudent(studentId);
+
+  logger.info(`[STUDENT] Estudiante obtenido - "${studentId}"`);
+
+  return data;
+};
 
 export const createStudent = async (
   schema: CreateStudentSchemaType,
@@ -18,7 +29,7 @@ export const createStudent = async (
   const guardianId =
     "guardian" in schema
       ? (await guardianRepository.createGuardian(schema.guardian)).guardianId
-      : (await guardianService.guardianExists(schema.guardianId),
+      : (await guardianService.existsGuardian(schema.guardianId),
         schema.guardianId);
 
   const data: StudentWithExistingGuardianSchemaType = {
@@ -34,4 +45,13 @@ export const createStudent = async (
   logger.info(
     `[STUDENT] Estudiante creado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}" por el usuario "${user.username}"`
   );
+};
+
+export const existsStudent = async (studentId: number) => {
+  const data = await studentRepository.existsStudent(studentId);
+
+  if (!data) {
+    logger.warn(`[STUDENT] Estudiante no encontrado - "${studentId}"`);
+    throw new HttpError(404, "No encontrado", "Estudiante no encontrado");
+  }
 };

@@ -4,6 +4,22 @@ import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/students/service";
 import { Request, Response } from "express";
 
+export const getStudent = async (req: Request, res: Response) => {
+  const studentId = Number(req.params.studentId);
+
+  const data = await service.getStudent(studentId);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Estudiante obtenido correctamente",
+        detail: "Se ha obtenido el estudiante",
+      },
+      data: data,
+    })
+  );
+};
+
 export const createStudent = async (req: Request, res: Response) => {
   const schema = validateSchema(CreateStudentSchema, req.body);
   const user = req.user!;

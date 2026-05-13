@@ -6,6 +6,16 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get(
+  "/:studentId",
+  authMiddleware,
+  allowRolesMiddleware([
+    USER_ROLES.DIRECTOR,
+    USER_ROLES.SECRETARY,
+    USER_ROLES.TEACHER,
+  ]),
+  controller.getStudent
+);
 router.post(
   "/",
   authMiddleware,
