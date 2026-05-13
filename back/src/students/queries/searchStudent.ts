@@ -3,6 +3,12 @@ export const searchStudentQuery = {
   enrollmentNumber: true,
   createdAt: true,
   updatedAt: true,
+  status: {
+    select: {
+      catalogItemId: true,
+      name: true,
+    },
+  },
   user: {
     select: {
       userId: true,

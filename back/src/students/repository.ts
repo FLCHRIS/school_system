@@ -4,6 +4,25 @@ import { searchStudentQuery } from "@/students/queries/searchStudent";
 import { STUDENT_STATUS } from "@/students/constants";
 import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
+import { Prisma } from "@prisma/client";
+
+export const getStudents = async (
+  filter: Prisma.StudentWhereInput[],
+  skip: number,
+  take: number
+) => {
+  const [data, total] = await Promise.all([
+    prisma.student.findMany({
+      take,
+      skip,
+      where: { AND: filter },
+      select: searchStudentQuery,
+    }),
+    prisma.student.count({ where: { AND: filter } }),
+  ]);
+
+  return { data, total };
+};
 
 export const getStudent = async (studentId: number) => {
   return await prisma.student.findUnique({

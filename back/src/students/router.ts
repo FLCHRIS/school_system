@@ -7,6 +7,16 @@ import { Router } from "express";
 const router = Router();
 
 router.get(
+  "/",
+  authMiddleware,
+  allowRolesMiddleware([
+    USER_ROLES.DIRECTOR,
+    USER_ROLES.SECRETARY,
+    USER_ROLES.TEACHER,
+  ]),
+  controller.getStudents
+);
+router.get(
   "/:studentId",
   authMiddleware,
   allowRolesMiddleware([

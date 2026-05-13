@@ -8,9 +8,22 @@ import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { SCHOOL_CODE } from "@/constants";
 import { logger } from "@/config/logger";
+import { Prisma } from "@prisma/client";
 
 import * as guardianRepository from "@/guardian/repository";
 import * as guardianService from "@/guardian/service";
+
+export const getStudents = async (
+  filter: Prisma.StudentWhereInput[],
+  skip: number,
+  take: number
+) => {
+  const data = await studentRepository.getStudents(filter, skip, take);
+
+  logger.info(`[STUDENT] Estudiantes obtenidos - "${data.total}"`);
+
+  return data;
+};
 
 export const getStudent = async (studentId: number) => {
   await existsStudent(studentId);

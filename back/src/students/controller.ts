@@ -1,8 +1,37 @@
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
+import { QueryStudentSchema } from "@/students/schemas/queryStudent.schema";
+import { buildStudentFilter } from "@/students/utils/buildStudentFilter";
+import { getPagination, buildPaginationMeta } from "@/utils/pagination";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/students/service";
 import { Request, Response } from "express";
+
+export const getStudents = async (req: Request, res: Response) => {
+  const schema = validateSchema(QueryStudentSchema, req.query);
+
+  const pagination = getPagination(schema.page, schema.size);
+  const filter = buildStudentFilter(schema);
+
+  const { data, total } = await service.getStudents(
+    filter,
+    pagination.skip,
+    pagination.take
+  );
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Estudiantes obtenidos correctamente",
+        detail: "Se han obtenido los estudiantes",
+      },
+      data,
+      meta: {
+        pagination: buildPaginationMeta(total, schema.page, schema.size),
+      },
+    })
+  );
+};
 
 export const getStudent = async (req: Request, res: Response) => {
   const studentId = Number(req.params.studentId);
