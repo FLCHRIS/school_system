@@ -1,22 +1,12 @@
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
+import { guardianSelectAll } from "@/guardian/queries/guardianSelect";
 import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
 
 export const getGuardian = async (guardianId: number) => {
   return await prisma.guardian.findUnique({
     where: { guardianId },
-    include: {
-      user: {
-        include: {
-          role: true,
-          status: true,
-          personalInfo: true,
-          contactInfo: true,
-          profilePhoto: true,
-        },
-      },
-      address: true,
-    },
+    select: guardianSelectAll,
   });
 };
 
