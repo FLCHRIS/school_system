@@ -1,4 +1,4 @@
-import { PaginationSchema } from "@/schemas/pagination.schema";
+import { PaginationSchema } from "@/schemas/pagination/pagination.schema";
 import { z } from "zod";
 
 const CATALOG_TYPES = {
