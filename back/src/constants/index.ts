@@ -11,3 +11,5 @@ export const USER_ROLES = {
   STUDENT: 4,
   GUARDIAN: 5,
 } as const;
+
+export const SCHOOL_CODE = "SEC";
