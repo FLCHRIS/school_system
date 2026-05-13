@@ -10,6 +10,11 @@ import { env } from "@/config/env";
 export const logIn = async (schema: LoginSchemaType) => {
   const user = await userLoginExists(schema.username);
 
+  if (!user.password || !user.username) {
+    logger.warn(`[AUTH] Usuario sin acceso al sistema - "${schema.username}"`);
+    throw new HttpError(401, "No autorizado", "Usuario sin acceso al sistema");
+  }
+
   if (!(await comparePassword(schema.password, user.password))) {
     logger.warn(`[AUTH] Contraseña incorrecta - "${schema.username}"`);
     throw new HttpError(401, "No autorizado", "Contraseña incorrecta");
