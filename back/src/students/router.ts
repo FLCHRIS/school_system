@@ -32,5 +32,11 @@ router.post(
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.createStudent
 );
+router.put(
+  "/:studentId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.updateStudent
+);
 
 export default router;

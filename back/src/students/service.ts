@@ -2,8 +2,8 @@ import {
   CreateStudentSchemaType,
   StudentWithExistingGuardianSchemaType,
 } from "@/students/schemas/createStudent.schema";
-import * as studentRepository from "@/students/repository";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
+import * as studentRepository from "@/students/repository";
 import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { SCHOOL_CODE } from "@/constants";

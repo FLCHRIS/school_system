@@ -2,6 +2,7 @@ import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
 import { QueryStudentSchema } from "@/students/schemas/queryStudent.schema";
 import { buildStudentFilter } from "@/students/utils/buildStudentFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
+import { UpdateStudentSchema } from "./schemas/updateStudent.schema";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/students/service";
@@ -59,7 +60,22 @@ export const createStudent = async (req: Request, res: Response) => {
     createResponse({
       message: {
         title: "Estudiante creado correctamente",
-        detail: "Se ha creado la estudiante",
+        detail: "Se ha creado el estudiante",
+      },
+    })
+  );
+};
+
+export const updateStudent = async (req: Request, res: Response) => {
+  const schema = validateSchema(UpdateStudentSchema, req.body);
+  const studentId = Number(req.params.studentId);
+  const user = req.user!;
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Estudiante actualizado correctamente",
+        detail: "Se ha actualizado el estudiante",
       },
     })
   );
