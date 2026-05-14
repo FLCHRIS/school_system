@@ -46,7 +46,7 @@ export const getCatalogItem = async (
   catalogItemId: number
 ) => {
   return await prisma.catalogItem.findFirst({
-    where: { catalogItemId, catalogId },
+    where: { catalogItemId, catalogId, isActive: true },
     select: {
       catalogItemId: true,
       name: true,
