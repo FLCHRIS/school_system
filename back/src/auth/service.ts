@@ -1,3 +1,4 @@
+import { validateUserAccess } from "@/policies/userStatus.policy";
 import { LoginSchemaType } from "@/auth/schemas/login.schema";
 import { DecodedToken } from "@/types/auth.types";
 import { comparePassword } from "@/utils/bcrypt";
@@ -9,6 +10,8 @@ import { env } from "@/config/env";
 
 export const logIn = async (schema: LoginSchemaType) => {
   const user = await userLoginExists(schema.username);
+
+  validateUserAccess(user.statusId, schema.username);
 
   if (!user.password || !user.username) {
     logger.warn(`[AUTH] Usuario sin acceso al sistema - "${schema.username}"`);
@@ -36,6 +39,9 @@ export const logIn = async (schema: LoginSchemaType) => {
 
 export const getMe = async (user: DecodedToken) => {
   const data = await userGetMeExists(user.userId);
+
+  const statusId = data.status.catalogItemId;
+  validateUserAccess(statusId, user.username);
 
   logger.info(`[AUTH] Información de usuario obtenida - "${user.username}"`);
 
