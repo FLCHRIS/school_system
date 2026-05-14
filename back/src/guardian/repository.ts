@@ -44,7 +44,7 @@ export const createGuardian = async (data: CreateGuardianSchemaType) => {
 
 export const existsGuardian = async (guardianId: number) => {
   return await prisma.guardian.findUnique({
-    where: { guardianId },
+    where: { guardianId, user: { statusId: USER_STATUS.ACTIVE } },
     select: existsGuardianQuery,
   });
 };
