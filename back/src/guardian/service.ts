@@ -1,3 +1,4 @@
+import { validateUserAccess } from "@/policies/userStatus.policy";
 import * as repository from "@/guardian/repository";
 import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
@@ -9,4 +10,9 @@ export const existsGuardian = async (guardianId: number) => {
     logger.warn(`[GUARDIAN] Tutor no encontrado - "${guardianId}"`);
     throw new HttpError(404, "No encontrado", "Tutor no encontrado");
   }
+
+  const statusId = data.user.statusId;
+  validateUserAccess(statusId);
+
+  return data;
 };

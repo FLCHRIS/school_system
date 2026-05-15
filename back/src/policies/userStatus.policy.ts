@@ -2,9 +2,9 @@ import { HttpError } from "@/errors/http.error";
 import { USER_STATUS } from "@/constants";
 import { logger } from "@/config/logger";
 
-export const validateUserAccess = (statusId: number, username?: string) => {
+export const validateUserAccess = (statusId: number) => {
   if (statusId === USER_STATUS.SUSPENDED) {
-    logger.warn(`[AUTH] Usuario suspendido - "${username}"`);
+    logger.warn("[AUTH] Usuario suspendido");
 
     throw new HttpError(
       401,
@@ -14,7 +14,7 @@ export const validateUserAccess = (statusId: number, username?: string) => {
   }
 
   if (statusId === USER_STATUS.INACTIVE) {
-    logger.warn(`[AUTH] Usuario inactivo - "${username}"`);
+    logger.warn("[AUTH] Usuario inactivo");
 
     throw new HttpError(
       401,
