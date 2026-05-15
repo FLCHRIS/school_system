@@ -1,4 +1,5 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
+import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { existsStudentQuery } from "@/students/queries/existsStudent";
 import { searchStudentQuery } from "@/students/queries/searchStudent";
 import { STUDENT_STATUS } from "@/students/constants";
@@ -71,6 +72,50 @@ export const createStudent = async (
       },
       guardian: {
         connect: { guardianId: data.guardianId },
+      },
+    },
+  });
+};
+
+export const updateStudent = async (
+  data: UpdateStudentSchemaType,
+  studentId: number
+) => {
+  return await prisma.student.update({
+    where: { studentId },
+    data: {
+      guardian: {
+        connect: { guardianId: data.guardianId },
+      },
+      user: {
+        update: {
+          personalInfo: {
+            update: {
+              firstName: data.user.personalInfo.firstName,
+              lastName: data.user.personalInfo.lastName,
+              birthDate: data.user.personalInfo.birthDate,
+              gender: {
+                connect: { catalogItemId: data.user.personalInfo.genderId },
+              },
+            },
+          },
+          contactInfo: {
+            update: {
+              email: data.user.contactInfo.email,
+              phone: data.user.contactInfo.phone,
+            },
+          },
+        },
+      },
+      address: {
+        update: {
+          street: data.address.street,
+          neighborhood: data.address.neighborhood,
+          city: data.address.city,
+          state: data.address.state,
+          zipCode: data.address.zipCode,
+          reference: data.address.reference ?? null,
+        },
       },
     },
   });

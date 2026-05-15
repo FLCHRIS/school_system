@@ -3,9 +3,10 @@ import {
   StudentWithExistingGuardianSchemaType,
 } from "@/students/schemas/createStudent.schema";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
+import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
+import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import * as studentRepository from "@/students/repository";
-import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { SCHOOL_CODE } from "@/constants";
 import { logger } from "@/config/logger";
@@ -63,6 +64,23 @@ export const createStudent = async (schema: CreateStudentSchemaType) => {
   );
 };
 
+export const updateStudent = async (
+  schema: UpdateStudentSchemaType,
+  studentId: number
+) => {
+  const studentStatusId = (await existsStudent(studentId)).studentStatusId;
+  validateStudentCanEdit(studentStatusId);
+
+  const guardian = await guardianService.existsGuardian(schema.guardianId);
+  validateGuardianCanBeAssigned(guardian.user.statusId);
+
+  await studentRepository.updateStudent(schema, studentId);
+
+  logger.info(
+    `[STUDENT] Estudiante actualizado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
+  );
+};
+
 export const existsStudent = async (studentId: number) => {
   const data = await studentRepository.existsStudent(studentId);
 
@@ -70,4 +88,6 @@ export const existsStudent = async (studentId: number) => {
     logger.warn(`[STUDENT] Estudiante no encontrado - "${studentId}"`);
     throw new HttpError(404, "No encontrado", "Estudiante no encontrado");
   }
+
+  return data;
 };

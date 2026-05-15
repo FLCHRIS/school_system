@@ -69,6 +69,8 @@ export const updateStudent = async (req: Request, res: Response) => {
   const schema = validateSchema(UpdateStudentSchema, req.body);
   const studentId = Number(req.params.studentId);
 
+  await service.updateStudent(schema, studentId);
+
   return res.status(200).json(
     createResponse({
       message: {
