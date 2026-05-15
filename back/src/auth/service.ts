@@ -1,4 +1,4 @@
-import { validateUserAccess } from "@/policies/userStatus.policy";
+import { validateUserAccess } from "@/policies/validateUserStatus.policy";
 import { LoginSchemaType } from "@/auth/schemas/login.schema";
 import { DecodedToken } from "@/types/auth.types";
 import { comparePassword } from "@/utils/bcrypt";
@@ -10,6 +10,7 @@ import { env } from "@/config/env";
 
 export const logIn = async (schema: LoginSchemaType) => {
   const user = await userLoginExists(schema.username);
+  validateUserAccess(user.statusId);
 
   if (!user.password || !user.username) {
     logger.warn(`[AUTH] Usuario sin acceso al sistema - "${schema.username}"`);
@@ -38,6 +39,9 @@ export const logIn = async (schema: LoginSchemaType) => {
 export const getMe = async (user: DecodedToken) => {
   const data = await userGetMeExists(user.userId);
 
+  const statusId = data.status.catalogItemId;
+  validateUserAccess(statusId);
+
   logger.info(`[AUTH] Información de usuario obtenida - "${user.username}"`);
 
   return data;
@@ -50,8 +54,6 @@ const userLoginExists = async (username: string) => {
     logger.warn(`[AUTH] Usuario no encontrado - "${username}"`);
     throw new HttpError(401, "No autorizado", "Usuario no encontrado");
   }
-
-  validateUserAccess(data.statusId);
 
   return data;
 };
@@ -67,9 +69,6 @@ const userGetMeExists = async (userId: number) => {
       "Información de usuario no encontrada"
     );
   }
-
-  const statusId = data.status.catalogItemId;
-  validateUserAccess(statusId);
 
   return data;
 };

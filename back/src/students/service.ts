@@ -2,6 +2,7 @@ import {
   CreateStudentSchemaType,
   StudentWithExistingGuardianSchemaType,
 } from "@/students/schemas/createStudent.schema";
+import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import * as studentRepository from "@/students/repository";
 import { DecodedToken } from "@/types/auth.types";
@@ -39,11 +40,16 @@ export const createStudent = async (
   schema: CreateStudentSchemaType,
   user: DecodedToken
 ) => {
-  const guardianId =
-    "guardian" in schema
-      ? (await guardianRepository.createGuardian(schema.guardian)).guardianId
-      : (await guardianService.existsGuardian(schema.guardianId),
-        schema.guardianId);
+  let guardianId: number | undefined;
+
+  if ("guardian" in schema) {
+    const guardian = await guardianRepository.createGuardian(schema.guardian);
+    guardianId = guardian.guardianId;
+  } else {
+    const guardian = await guardianService.existsGuardian(schema.guardianId);
+    validateGuardianCanBeAssigned(guardian.user.statusId);
+    guardianId = schema.guardianId;
+  }
 
   const data: StudentWithExistingGuardianSchemaType = {
     user: schema.user,
