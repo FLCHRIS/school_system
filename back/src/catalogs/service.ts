@@ -2,7 +2,6 @@ import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { isForeignKeyError } from "@/errors/prisma.error";
 import * as repository from "@/catalogs/repository";
-import { DecodedToken } from "@/types/auth.types";
 import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
@@ -31,54 +30,43 @@ export const getCatalogItems = async (catalogId: number) => {
 
 export const createCatalogItem = async (
   catalogId: number,
-  schema: CreateCatalogSchemaType,
-  user: DecodedToken
+  schema: CreateCatalogSchemaType
 ) => {
   await catalogExists(catalogId);
 
   await repository.createCatalogItem(catalogId, schema);
 
-  logger.info(
-    `[CATALOG] Catálogo creado - "${schema.name}" por el usuario "${user.username}"`
-  );
+  logger.info(`[CATALOG] Catálogo creado - "${schema.name}"`);
 };
 
 export const updateCatalogItem = async (
   catalogId: number,
   catalogItemId: number,
-  schema: UpdateCatalogSchemaType,
-  user: DecodedToken
+  schema: UpdateCatalogSchemaType
 ) => {
   await catalogItemExists(catalogId, catalogItemId);
 
   await repository.updateCatalogItem(catalogItemId, schema);
 
-  logger.info(
-    `[CATALOG] Catálogo actualizado - "${schema.name}" por el usuario "${user.username}"`
-  );
+  logger.info(`[CATALOG] Catálogo actualizado - "${schema.name}"`);
 };
 
 export const deleteCatalogItem = async (
   catalogId: number,
-  catalogItemId: number,
-  user: DecodedToken
+  catalogItemId: number
 ) => {
   await catalogItemExists(catalogId, catalogItemId);
 
   try {
     await repository.deleteCatalogItem(catalogItemId);
 
-    logger.info(
-      `[CATALOG] Catálogo eliminado - "${catalogItemId}" por el usuario "${user.username}"`
-    );
+    logger.info(`[CATALOG] Catálogo eliminado - "${catalogItemId}"`);
   } catch (error) {
     if (!isForeignKeyError(error)) throw error;
 
     await repository.inactivateCatalogItem(catalogItemId);
 
-    logger.info(
-      `[CATALOG] Catálogo inactivado - "${catalogItemId}" por el usuario "${user.username}"`
-    );
+    logger.info(`[CATALOG] Catálogo inactivado - "${catalogItemId}"`);
   }
 };
 

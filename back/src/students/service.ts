@@ -36,10 +36,7 @@ export const getStudent = async (studentId: number) => {
   return data;
 };
 
-export const createStudent = async (
-  schema: CreateStudentSchemaType,
-  user: DecodedToken
-) => {
+export const createStudent = async (schema: CreateStudentSchemaType) => {
   let guardianId: number | undefined;
 
   if ("guardian" in schema) {
@@ -62,7 +59,7 @@ export const createStudent = async (
   await studentRepository.setEnrollmentNumber(studentId, enrollmentNumber);
 
   logger.info(
-    `[STUDENT] Estudiante creado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}" por el usuario "${user.username}"`
+    `[STUDENT] Estudiante creado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
   );
 };
 

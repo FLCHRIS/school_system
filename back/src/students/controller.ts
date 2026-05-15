@@ -52,9 +52,8 @@ export const getStudent = async (req: Request, res: Response) => {
 
 export const createStudent = async (req: Request, res: Response) => {
   const schema = validateSchema(CreateStudentSchema, req.body);
-  const user = req.user!;
 
-  await service.createStudent(schema, user);
+  await service.createStudent(schema);
 
   return res.status(201).json(
     createResponse({
@@ -69,7 +68,6 @@ export const createStudent = async (req: Request, res: Response) => {
 export const updateStudent = async (req: Request, res: Response) => {
   const schema = validateSchema(UpdateStudentSchema, req.body);
   const studentId = Number(req.params.studentId);
-  const user = req.user!;
 
   return res.status(200).json(
     createResponse({

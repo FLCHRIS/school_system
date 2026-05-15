@@ -53,9 +53,8 @@ export const getCatalogItems = async (req: Request, res: Response) => {
 export const createCatalogItem = async (req: Request, res: Response) => {
   const schema = validateSchema(CreateCatalogSchema, req.body);
   const catalogId = Number(req.params.catalogId);
-  const user = req.user!;
 
-  await service.createCatalogItem(catalogId, schema, user);
+  await service.createCatalogItem(catalogId, schema);
 
   return res.status(201).json(
     createResponse({
@@ -71,9 +70,8 @@ export const updateCatalogItem = async (req: Request, res: Response) => {
   const schema = validateSchema(UpdateCatalogSchema, req.body);
   const catalogItemId = Number(req.params.catalogItemId);
   const catalogId = Number(req.params.catalogId);
-  const user = req.user!;
 
-  await service.updateCatalogItem(catalogId, catalogItemId, schema, user);
+  await service.updateCatalogItem(catalogId, catalogItemId, schema);
 
   return res.status(200).json(
     createResponse({
@@ -88,9 +86,8 @@ export const updateCatalogItem = async (req: Request, res: Response) => {
 export const deleteCatalogItem = async (req: Request, res: Response) => {
   const catalogItemId = Number(req.params.catalogItemId);
   const catalogId = Number(req.params.catalogId);
-  const user = req.user!;
 
-  await service.deleteCatalogItem(catalogId, catalogItemId, user);
+  await service.deleteCatalogItem(catalogId, catalogItemId);
 
   return res.status(200).json(
     createResponse({
