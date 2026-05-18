@@ -1,8 +1,8 @@
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
+import { UpdateStudentSchema } from "@/students/schemas/updateStudent.schema";
 import { QueryStudentSchema } from "@/students/schemas/queryStudent.schema";
 import { buildStudentFilter } from "@/students/utils/buildStudentFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { UpdateStudentSchema } from "./schemas/updateStudent.schema";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/students/service";
