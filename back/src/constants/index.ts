@@ -12,4 +12,13 @@ export const USER_ROLES = {
   GUARDIAN: 5,
 } as const;
 
+export const STORAGE_FOLDER_CLOUDINARY = {
+  USER_PROFILE_PHOTO: "users/profile-photos",
+
+  STUDENT_DOCUMENT: "students/documents",
+  GUARDIAN_DOCUMENT: "guardians/documents",
+} as const;
+
 export const SCHOOL_CODE = "SEC";
+
+export const ROOT_FOLDER_CLOUDINARY = "school_system/";
