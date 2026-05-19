@@ -24,5 +24,11 @@ router.post(
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.createGuardian
 );
+router.put(
+  "/:guardianId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.updateGuardian
+);
 
 export default router;

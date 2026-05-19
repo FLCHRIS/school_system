@@ -1,4 +1,6 @@
+import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
+import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
 import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import * as repository from "@/guardian/repository";
 import { HttpError } from "@/errors/http.error";
@@ -37,6 +39,28 @@ export const createGuardian = async (schema: CreateGuardianSchemaType) => {
   );
 
   return data;
+};
+
+export const updateGuardian = async (
+  schema: UpdateGuardianSchemaType,
+  guardianId: number
+) => {
+  const guardian = await existsGuardian(guardianId);
+
+  const guardianStatusId = guardian.user.statusId;
+  const oldEmail = guardian.user.contactInfo.email;
+  const newEmail = schema.user.contactInfo.email;
+
+  validateGuardianCanEdit(guardianStatusId);
+  if (newEmail !== oldEmail) await validateEmailAvailable(newEmail);
+
+  const updatedGuardian = await repository.updateGuardian(schema, guardianId);
+
+  logger.info(
+    `[GUARDIAN] Tutor actualizado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
+  );
+
+  return updatedGuardian;
 };
 
 export const existsGuardian = async (guardianId: number) => {

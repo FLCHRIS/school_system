@@ -1,4 +1,5 @@
 import { CreateGuardianSchema } from "@/guardian/schemas/createGuardian.schema";
+import { UpdateGuardianSchema } from "@/guardian/schemas/updateGuardian.schema";
 import { QueryGuardianSchema } from "@/guardian/schemas/queryGuardian.schema";
 import { buildGuardianFilter } from "@/guardian/utils/buildGuardianFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
@@ -57,8 +58,24 @@ export const createGuardian = async (req: Request, res: Response) => {
   return res.status(201).json(
     createResponse({
       message: {
-        title: "Guardian created successfully",
-        detail: "The guardian has been created",
+        title: "Tutor creado correctamente",
+        detail: "Se ha creado el tutor",
+      },
+    })
+  );
+};
+
+export const updateGuardian = async (req: Request, res: Response) => {
+  const schema = validateSchema(UpdateGuardianSchema, req.body);
+  const guardianId = Number(req.params.guardianId);
+
+  await service.updateGuardian(schema, guardianId);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Tutor actualizado correctamente",
+        detail: "Se ha actualizado el tutor",
       },
     })
   );

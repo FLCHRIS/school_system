@@ -1,4 +1,5 @@
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
+import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
 import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
 import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
 import { USER_ROLES, USER_STATUS } from "@/constants";
@@ -57,6 +58,47 @@ export const createGuardian = async (data: CreateGuardianSchemaType) => {
       },
       address: {
         create: {
+          street: data.address.street,
+          neighborhood: data.address.neighborhood,
+          city: data.address.city,
+          state: data.address.state,
+          zipCode: data.address.zipCode,
+          reference: data.address.reference ?? null,
+        },
+      },
+    },
+  });
+};
+
+export const updateGuardian = async (
+  data: UpdateGuardianSchemaType,
+  guardianId: number
+) => {
+  return await prisma.guardian.update({
+    where: { guardianId },
+    data: {
+      user: {
+        update: {
+          personalInfo: {
+            update: {
+              firstName: data.user.personalInfo.firstName,
+              lastName: data.user.personalInfo.lastName,
+              birthDate: data.user.personalInfo.birthDate,
+              gender: {
+                connect: { catalogItemId: data.user.personalInfo.genderId },
+              },
+            },
+          },
+          contactInfo: {
+            update: {
+              email: data.user.contactInfo.email,
+              phone: data.user.contactInfo.phone,
+            },
+          },
+        },
+      },
+      address: {
+        update: {
           street: data.address.street,
           neighborhood: data.address.neighborhood,
           city: data.address.city,
