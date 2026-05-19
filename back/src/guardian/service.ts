@@ -1,6 +1,20 @@
+import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
+import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import * as repository from "@/guardian/repository";
 import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
+
+export const createGuardian = async (schema: CreateGuardianSchemaType) => {
+  await validateEmailAvailable(schema.user.contactInfo.email);
+
+  const data = await repository.createGuardian(schema);
+
+  logger.info(
+    `[GUARDIAN] Tutor creado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
+  );
+
+  return data;
+};
 
 export const existsGuardian = async (guardianId: number) => {
   const data = await repository.existsGuardian(guardianId);

@@ -2,8 +2,9 @@ import { errorMiddleware } from "@/middlewares/error.middlewares";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
+import guardiansRouter from "@/guardian/router";
 import studentsRouter from "@/students/router";
-import catalogRouter from "@/catalogs/router";
+import catalogsRouter from "@/catalogs/router";
 import authRoter from "@/auth/router";
 
 import express from "express";
@@ -29,8 +30,9 @@ app.use(
 );
 
 app.use("/api/auth", authRoter);
-app.use("/api/catalogs", catalogRouter);
+app.use("/api/catalogs", catalogsRouter);
 app.use("/api/students", studentsRouter);
+app.use("/api/guardians", guardiansRouter);
 
 app.use(errorMiddleware);
 

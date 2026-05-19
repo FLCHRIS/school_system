@@ -3,6 +3,11 @@ export const existsGuardianQuery = {
   user: {
     select: {
       statusId: true,
+      contactInfo: {
+        select: {
+          email: true,
+        },
+      },
     },
   },
 } as const;
