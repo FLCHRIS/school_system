@@ -4,6 +4,11 @@ export const existsStudentQuery = {
   user: {
     select: {
       statusId: true,
+      contactInfo: {
+        select: {
+          email: true,
+        },
+      },
     },
   },
 } as const;

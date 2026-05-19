@@ -4,6 +4,7 @@ import {
 } from "@/students/schemas/createStudent.schema";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
 import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
+import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import * as studentRepository from "@/students/repository";
@@ -38,6 +39,7 @@ export const getStudent = async (studentId: number) => {
 };
 
 export const createStudent = async (schema: CreateStudentSchemaType) => {
+  await validateEmailAvailable(schema.user.contactInfo.email);
   let guardianId: number | undefined;
 
   if ("guardian" in schema) {
@@ -68,8 +70,14 @@ export const updateStudent = async (
   schema: UpdateStudentSchemaType,
   studentId: number
 ) => {
-  const studentStatusId = (await existsStudent(studentId)).studentStatusId;
+  const student = await existsStudent(studentId);
+
+  const studentStatusId = student.studentStatusId;
+  const oldEmail = student.user.contactInfo.email;
+  const newEmail = schema.user.contactInfo.email;
+
   validateStudentCanEdit(studentStatusId);
+  if (newEmail !== oldEmail) await validateEmailAvailable(newEmail);
 
   const guardian = await guardianService.existsGuardian(schema.guardianId);
   validateGuardianCanBeAssigned(guardian.user.statusId);
