@@ -6,6 +6,12 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get(
+  "/",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.getGuardians
+);
 router.post(
   "/",
   authMiddleware,

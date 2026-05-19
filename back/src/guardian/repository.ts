@@ -1,7 +1,27 @@
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
+import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
 import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
+import { Prisma } from "@prisma/client";
+
+export const getGuardians = async (
+  filter: Prisma.GuardianWhereInput[],
+  skip: number,
+  take: number
+) => {
+  const [data, total] = await Promise.all([
+    prisma.guardian.findMany({
+      take,
+      skip,
+      where: { AND: filter },
+      select: searchGuardianQuery,
+    }),
+    prisma.guardian.count({ where: { AND: filter } }),
+  ]);
+
+  return { data, total };
+};
 
 export const createGuardian = async (data: CreateGuardianSchemaType) => {
   return await prisma.guardian.create({
