@@ -17,6 +17,16 @@ export const getGuardians = async (
   return data;
 };
 
+export const getGuardian = async (guardianId: number) => {
+  await existsGuardian(guardianId);
+
+  const data = await repository.getGuardian(guardianId);
+
+  logger.info(`[GUARDIAN] Tutor obtenido - "${guardianId}"`);
+
+  return data;
+};
+
 export const createGuardian = async (schema: CreateGuardianSchemaType) => {
   await validateEmailAvailable(schema.user.contactInfo.email);
 

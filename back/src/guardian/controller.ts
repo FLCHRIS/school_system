@@ -33,6 +33,22 @@ export const getGuardians = async (req: Request, res: Response) => {
   );
 };
 
+export const getGuardian = async (req: Request, res: Response) => {
+  const guardianId = Number(req.params.guardianId);
+
+  const data = await service.getGuardian(guardianId);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Tutor obtenido correctamente",
+        detail: "Se ha obtenido el tutor",
+      },
+      data,
+    })
+  );
+};
+
 export const createGuardian = async (req: Request, res: Response) => {
   const schema = validateSchema(CreateGuardianSchema, req.body);
 

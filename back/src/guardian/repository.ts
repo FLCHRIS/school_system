@@ -23,6 +23,13 @@ export const getGuardians = async (
   return { data, total };
 };
 
+export const getGuardian = async (guardianId: number) => {
+  return await prisma.guardian.findUnique({
+    where: { guardianId },
+    select: searchGuardianQuery,
+  });
+};
+
 export const createGuardian = async (data: CreateGuardianSchemaType) => {
   return await prisma.guardian.create({
     data: {

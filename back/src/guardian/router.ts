@@ -12,6 +12,12 @@ router.get(
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.getGuardians
 );
+router.get(
+  "/:guardianId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.getGuardian
+);
 router.post(
   "/",
   authMiddleware,
