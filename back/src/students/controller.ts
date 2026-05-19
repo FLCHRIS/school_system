@@ -45,7 +45,7 @@ export const getStudent = async (req: Request, res: Response) => {
         title: "Estudiante obtenido correctamente",
         detail: "Se ha obtenido el estudiante",
       },
-      data: data,
+      data,
     })
   );
 };
