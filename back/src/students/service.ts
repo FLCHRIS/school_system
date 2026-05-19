@@ -8,13 +8,11 @@ import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import * as studentRepository from "@/students/repository";
+import * as guardianService from "@/guardian/service";
 import { HttpError } from "@/errors/http.error";
 import { SCHOOL_CODE } from "@/constants";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
-
-import * as guardianRepository from "@/guardian/repository";
-import * as guardianService from "@/guardian/service";
 
 export const getStudents = async (
   filter: Prisma.StudentWhereInput[],
@@ -43,7 +41,7 @@ export const createStudent = async (schema: CreateStudentSchemaType) => {
   let guardianId: number | undefined;
 
   if ("guardian" in schema) {
-    const guardian = await guardianRepository.createGuardian(schema.guardian);
+    const guardian = await guardianService.createGuardian(schema.guardian);
     guardianId = guardian.guardianId;
   } else {
     const guardian = await guardianService.existsGuardian(schema.guardianId);
@@ -57,13 +55,17 @@ export const createStudent = async (schema: CreateStudentSchemaType) => {
     guardianId,
   };
 
-  const studentId = (await studentRepository.createStudent(data)).studentId;
+  const student = await studentRepository.createStudent(data);
+  const studentId = student.studentId;
+
   const enrollmentNumber = generateEnrollmentNumber(SCHOOL_CODE, studentId);
   await studentRepository.setEnrollmentNumber(studentId, enrollmentNumber);
 
   logger.info(
     `[STUDENT] Estudiante creado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
   );
+
+  return student;
 };
 
 export const updateStudent = async (
@@ -82,11 +84,16 @@ export const updateStudent = async (
   const guardian = await guardianService.existsGuardian(schema.guardianId);
   validateGuardianCanBeAssigned(guardian.user.statusId);
 
-  await studentRepository.updateStudent(schema, studentId);
+  const updatedStudent = await studentRepository.updateStudent(
+    schema,
+    studentId
+  );
 
   logger.info(
     `[STUDENT] Estudiante actualizado - "${schema.user.personalInfo.firstName} ${schema.user.personalInfo.lastName}"`
   );
+
+  return updatedStudent;
 };
 
 export const existsStudent = async (studentId: number) => {
