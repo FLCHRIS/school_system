@@ -8,6 +8,7 @@ import { DecodedToken } from "@/types/auth.types";
 import { signAccessToken } from "@/services/jwt";
 import { HttpError } from "@/errors/http.error";
 import * as repository from "@/auth/repository";
+import { UploadApiResponse } from "cloudinary";
 import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
@@ -51,31 +52,43 @@ export const getMe = async (user: DecodedToken) => {
 };
 
 export const updateProfilePhoto = async (pathImage: string, userId: number) => {
-  await userExists(userId);
+  let newProfilePhoto: UploadApiResponse | null = null;
 
-  const user = await repository.getUserProfilePhoto(userId);
-  const oldProfilePhoto = user?.profilePhoto;
+  try {
+    await userExists(userId);
 
-  if (oldProfilePhoto) {
-    await cloudinaryService.deleteFile(oldProfilePhoto.publicId);
+    const user = await repository.getUserProfilePhoto(userId);
+    const oldProfilePhoto = user?.profilePhoto;
+
+    newProfilePhoto = await cloudinaryService.uploadFile(
+      pathImage,
+      STORAGE_FOLDER_CLOUDINARY.USER_PROFILE_PHOTO
+    );
+
+    const updatedUser = await repository.uploadUserProfilePhoto(
+      userId,
+      newProfilePhoto.public_id,
+      newProfilePhoto.secure_url
+    );
+
+    if (oldProfilePhoto) {
+      await cloudinaryService.deleteFile(oldProfilePhoto.publicId);
+    }
+
+    logger.info(
+      `[AUTH] Foto de perfil actualizada - "${updatedUser.username}"`
+    );
+
+    return updatedUser;
+  } catch (error) {
+    if (newProfilePhoto) {
+      await cloudinaryService.deleteFile(newProfilePhoto.public_id);
+    }
+
+    throw error;
+  } finally {
+    await deleteTempFile(pathImage);
   }
-
-  const newProfilePhoto = await cloudinaryService.uploadFile(
-    pathImage,
-    STORAGE_FOLDER_CLOUDINARY.USER_PROFILE_PHOTO
-  );
-
-  await deleteTempFile(pathImage);
-
-  const updatedUser = await repository.uploadUserProfilePhoto(
-    userId,
-    newProfilePhoto.public_id,
-    newProfilePhoto.secure_url
-  );
-
-  logger.info(`[AUTH] Foto de perfil actualizada - "${updatedUser.username}"`);
-
-  return updatedUser;
 };
 
 const userExists = async (userId: number) => {
