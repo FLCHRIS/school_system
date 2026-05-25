@@ -1,4 +1,4 @@
-export const userSelectAll = {
+export const searchUserQuery = {
   userId: true,
   username: true,
   role: {
@@ -41,12 +41,4 @@ export const userSelectAll = {
       url: true,
     },
   },
-} as const;
-
-export const userSelectLogIn = {
-  username: true,
-  password: true,
-  statusId: true,
-  userId: true,
-  roleId: true,
 } as const;

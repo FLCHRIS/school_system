@@ -1,6 +1,7 @@
 import { LoginSchema } from "@/auth/schemas/login.schema";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
+import { validateFile } from "@/utils/validateFile";
 import { Request, Response } from "express";
 import * as service from "@/auth/service";
 
@@ -32,6 +33,22 @@ export const getMe = async (req: Request, res: Response) => {
         detail: "Se ha obtenido la información del usuario",
       },
       data,
+    })
+  );
+};
+
+export const updateProfilePhoto = async (req: Request, res: Response) => {
+  const file = validateFile(req.files?.profilePhoto, "profilePhoto");
+  const user = req.user!;
+
+  await service.updateProfilePhoto(file.tempFilePath, user.userId);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Foto de perfil actualizada correctamente",
+        detail: "Se ha actualizado la foto de perfil",
+      },
     })
   );
 };

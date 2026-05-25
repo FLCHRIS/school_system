@@ -1,6 +1,6 @@
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
-import { catalogSelectAll } from "@/catalogs/queries/catalogSelect";
+import { searchCatalogQuery } from "@/catalogs/queries/searchCatalog";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
@@ -14,7 +14,7 @@ export const getCatalogs = async (
       take,
       skip,
       where: filter,
-      select: catalogSelectAll,
+      select: searchCatalogQuery,
     }),
     prisma.catalog.count({ where: filter }),
   ]);

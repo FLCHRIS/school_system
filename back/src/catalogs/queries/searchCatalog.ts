@@ -1,4 +1,4 @@
-export const catalogSelectAll = {
+export const searchCatalogQuery = {
   catalogId: true,
   name: true,
   type: true,

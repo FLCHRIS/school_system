@@ -20,3 +20,6 @@ prisma/*.db-journal
 
 # logs
 *.log
+
+# tmp
+tmp

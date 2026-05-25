@@ -1,6 +1,9 @@
-import { validateUserAccess } from "@/policies/validateUserStatus.policy";
+import { validateUserAccess } from "@/policies/validateUserAccess.policy";
 import { LoginSchemaType } from "@/auth/schemas/login.schema";
+import * as cloudinaryService from "@/services/cloudinary";
+import { STORAGE_FOLDER_CLOUDINARY } from "@/constants";
 import { comparePassword } from "@/services/bcrypt";
+import { deleteTempFile } from "@/services/storage";
 import { DecodedToken } from "@/types/auth.types";
 import { signAccessToken } from "@/services/jwt";
 import { HttpError } from "@/errors/http.error";
@@ -46,6 +49,47 @@ export const getMe = async (user: DecodedToken) => {
 
   return data;
 };
+
+export const updateProfilePhoto = async (pathImage: string, userId: number) => {
+  await userExists(userId);
+
+  const user = await repository.getUserProfilePhoto(userId);
+  const oldProfilePhoto = user?.profilePhoto;
+
+  if (oldProfilePhoto) {
+    await cloudinaryService.deleteFile(oldProfilePhoto.publicId);
+  }
+
+  const newProfilePhoto = await cloudinaryService.uploadFile(
+    pathImage,
+    STORAGE_FOLDER_CLOUDINARY.USER_PROFILE_PHOTO
+  );
+
+  await deleteTempFile(pathImage);
+
+  const updatedUser = await repository.uploadUserProfilePhoto(
+    userId,
+    newProfilePhoto.public_id,
+    newProfilePhoto.secure_url
+  );
+
+  logger.info(`[AUTH] Foto de perfil actualizada - "${updatedUser.username}"`);
+
+  return updatedUser;
+};
+
+const userExists = async (userId: number) => {
+  const data = await repository.existsUser(userId);
+
+  if (!data) {
+    logger.warn(`[AUTH] Usuario no encontrado - "${userId}"`);
+    throw new HttpError(401, "No autorizado", "Usuario no encontrado");
+  }
+
+  return data;
+};
+
+// TODO: SOLO DEBO DE PROBAR EL ENDPOINT
 
 const userLoginExists = async (username: string) => {
   const data = await repository.findUserForLogin(username);
