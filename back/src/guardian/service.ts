@@ -10,6 +10,7 @@ import * as catalogService from "@/catalogs/service";
 import * as repository from "@/guardian/repository";
 import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
+import { UploadApiResponse } from "cloudinary";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
@@ -107,34 +108,45 @@ export const createGuardianDocument = async (
   schema: CreateGuardianDocumentSchemaType,
   guardianId: number
 ) => {
-  const guardian = await existsGuardian(guardianId);
-  validateGuardianCanEdit(guardian.user.statusId);
+  let newDocument: UploadApiResponse | null = null;
 
-  await validateGuardianDocumentNotDuplicate(guardianId, schema.catalogItemId);
-  await catalogService.catalogItemExists(
-    CATALOGS.GUARDIAN_DOCUMENT_TYPES,
-    schema.catalogItemId
-  );
+  try {
+    const guardian = await existsGuardian(guardianId);
+    validateGuardianCanEdit(guardian.user.statusId);
 
-  const newDocument = await cloudinaryService.uploadFile(
-    pathImage,
-    STORAGE_FOLDER_CLOUDINARY.GUARDIAN_DOCUMENT
-  );
+    await validateGuardianDocumentNotDuplicate(
+      guardianId,
+      schema.catalogItemId
+    );
+    await catalogService.catalogItemExists(
+      CATALOGS.GUARDIAN_DOCUMENT_TYPES,
+      schema.catalogItemId
+    );
 
-  await deleteTempFile(pathImage);
+    newDocument = await cloudinaryService.uploadFile(
+      pathImage,
+      STORAGE_FOLDER_CLOUDINARY.GUARDIAN_DOCUMENT
+    );
 
-  const updatedGuardian = await repository.createGuardianDocument(
-    schema.catalogItemId,
-    guardianId,
-    newDocument.public_id,
-    newDocument.secure_url
-  );
+    const updatedGuardian = await repository.createGuardianDocument(
+      schema.catalogItemId,
+      guardianId,
+      newDocument.public_id,
+      newDocument.secure_url
+    );
 
-  logger.info(
-    `[GUARDIAN-DOCUMENT] Documento creado - "${schema.catalogItemId}"`
-  );
+    logger.info(
+      `[GUARDIAN-DOCUMENT] Documento creado - "${schema.catalogItemId}"`
+    );
 
-  return updatedGuardian;
+    return updatedGuardian;
+  } catch (error) {
+    if (newDocument) await cloudinaryService.deleteFile(newDocument.public_id);
+
+    throw error;
+  } finally {
+    await deleteTempFile(pathImage);
+  }
 };
 
 export const existsGuardianDocument = async (
