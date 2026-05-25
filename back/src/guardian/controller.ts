@@ -1,3 +1,5 @@
+import { QueryGuardianDocumentSchema } from "@/guardian/schemas/queryGuardianDocument.schema";
+import { buildGuardianDocumentFilter } from "@/guardian/utils/buildGuardianDocumentFilter";
 import { CreateGuardianSchema } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchema } from "@/guardian/schemas/updateGuardian.schema";
 import { QueryGuardianSchema } from "@/guardian/schemas/queryGuardian.schema";
@@ -80,3 +82,39 @@ export const updateGuardian = async (req: Request, res: Response) => {
     })
   );
 };
+
+export const getGuardianDocuments = async (req: Request, res: Response) => {
+  const schema = validateSchema(QueryGuardianDocumentSchema, req.query);
+  const guardianId = Number(req.params.guardianId);
+
+  const pagination = getPagination(schema.page, schema.size);
+  const filter = buildGuardianDocumentFilter(schema);
+
+  const { data, total } = await service.getGuardianDocuments(
+    guardianId,
+    filter,
+    pagination.skip,
+    pagination.take
+  );
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Tutores obtenidos correctamente",
+        detail: "Se han obtenido los tutores",
+      },
+      data,
+      meta: {
+        pagination: buildPaginationMeta(total, schema.page, schema.size),
+      },
+    })
+  );
+};
+
+export const getGuardianDocument = async (req: Request, res: Response) => {};
+
+export const createGuardianDocument = async (req: Request, res: Response) => {};
+
+export const updateGuardianDocument = async (req: Request, res: Response) => {};
+
+export const deleteGuardianDocument = async (req: Request, res: Response) => {};

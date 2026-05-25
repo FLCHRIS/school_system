@@ -12,9 +12,20 @@ export const USER_ROLES = {
   GUARDIAN: 5,
 } as const;
 
+export const CATALOGS = {
+  USER_ROLES: 1,
+  USER_STATUSES: 2,
+  GENDERS: 3,
+  STUDENT_DOCUMENT_TYPES: 4,
+  SCHOOL_GRADES: 5,
+  SCHOOL_GROUPS: 6,
+  REPORT_CARD_STATUSES: 7,
+  GUARDIAN_DOCUMENT_TYPES: 8,
+  STUDENT_STATUSES: 9,
+} as const;
+
 export const STORAGE_FOLDER_CLOUDINARY = {
   USER_PROFILE_PHOTO: "users/profile-photos",
-
   STUDENT_DOCUMENT: "students/documents",
   GUARDIAN_DOCUMENT: "guardians/documents",
 } as const;

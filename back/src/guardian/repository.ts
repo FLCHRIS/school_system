@@ -1,8 +1,9 @@
+import { searchGuardianDocumentQuery } from "@/guardian/queries/searchGuardianDocument";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
 import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
 import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
-import { USER_ROLES, USER_STATUS } from "@/constants";
+import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
@@ -116,4 +117,29 @@ export const existsGuardian = async (guardianId: number) => {
     where: { guardianId },
     select: existsGuardianQuery,
   });
+};
+
+export const getGuardianDocuments = async (
+  guardianId: number,
+  filter: Prisma.CatalogItemWhereInput,
+  skip: number,
+  take: number
+) => {
+  const where: Prisma.CatalogItemWhereInput = {
+    catalogId: CATALOGS.GUARDIAN_DOCUMENT_TYPES,
+    isActive: true,
+    ...filter,
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.catalogItem.findMany({
+      take,
+      skip,
+      where,
+      select: searchGuardianDocumentQuery(guardianId),
+    }),
+    prisma.catalogItem.count({ where }),
+  ]);
+
+  return { data, total };
 };

@@ -73,3 +73,25 @@ export const existsGuardian = async (guardianId: number) => {
 
   return data;
 };
+
+export const getGuardianDocuments = async (
+  guardianId: number,
+  filter: Prisma.CatalogItemWhereInput,
+  skip: number,
+  take: number
+) => {
+  await existsGuardian(guardianId);
+
+  const data = await repository.getGuardianDocuments(
+    guardianId,
+    filter,
+    skip,
+    take
+  );
+
+  logger.info(
+    `[GUARDIAN-DOCUMENT] Documentos del tutor obtenidos - "${data.total}"`
+  );
+
+  return data;
+};

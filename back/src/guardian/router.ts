@@ -31,4 +31,35 @@ router.put(
   controller.updateGuardian
 );
 
+router.get(
+  "/:guardianId/documents",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.getGuardianDocuments
+);
+router.get(
+  "/:guardianId/documents/:documentId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.getGuardianDocument
+);
+router.post(
+  "/:guardianId/documents",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.createGuardianDocument
+);
+router.put(
+  "/:guardianId/documents/:documentId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.updateGuardianDocument
+);
+router.delete(
+  "/:guardianId/documents/:documentId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.deleteGuardianDocument
+);
+
 export default router;
