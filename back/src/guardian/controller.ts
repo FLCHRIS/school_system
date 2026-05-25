@@ -1,3 +1,4 @@
+import { CreateGuardianDocumentSchema } from "@/guardian/schemas/createGuardianDocument.schema";
 import { QueryGuardianDocumentSchema } from "@/guardian/schemas/queryGuardianDocument.schema";
 import { buildGuardianDocumentFilter } from "@/guardian/utils/buildGuardianDocumentFilter";
 import { CreateGuardianSchema } from "@/guardian/schemas/createGuardian.schema";
@@ -7,6 +8,7 @@ import { buildGuardianFilter } from "@/guardian/utils/buildGuardianFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
+import { validateFile } from "@/utils/validateFile";
 import * as service from "@/guardian/service";
 import { Request, Response } from "express";
 
@@ -111,9 +113,22 @@ export const getGuardianDocuments = async (req: Request, res: Response) => {
   );
 };
 
-export const getGuardianDocument = async (req: Request, res: Response) => {};
+export const createGuardianDocument = async (req: Request, res: Response) => {
+  const schema = validateSchema(CreateGuardianDocumentSchema, req.body);
+  const file = validateFile(req.files?.document, "document");
+  const guardianId = Number(req.params.guardianId);
 
-export const createGuardianDocument = async (req: Request, res: Response) => {};
+  await service.createGuardianDocument(file.tempFilePath, schema, guardianId);
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Documento creado correctamente",
+        detail: "Se ha creado el documento",
+      },
+    })
+  );
+};
 
 export const updateGuardianDocument = async (req: Request, res: Response) => {};
 

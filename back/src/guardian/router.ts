@@ -1,4 +1,5 @@
 import { allowRolesMiddleware } from "@/middlewares/allowRoles.middlewares";
+import { uploadMiddleware } from "@/middlewares/upload.middlewares";
 import { authMiddleware } from "@/middlewares/auth.middlewares";
 import * as controller from "@/guardian/controller";
 import { USER_ROLES } from "@/constants";
@@ -37,22 +38,18 @@ router.get(
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.getGuardianDocuments
 );
-router.get(
-  "/:guardianId/documents/:documentId",
-  authMiddleware,
-  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.getGuardianDocument
-);
 router.post(
   "/:guardianId/documents",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  uploadMiddleware,
   controller.createGuardianDocument
 );
 router.put(
   "/:guardianId/documents/:documentId",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  uploadMiddleware,
   controller.updateGuardianDocument
 );
 router.delete(

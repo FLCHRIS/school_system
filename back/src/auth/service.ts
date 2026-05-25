@@ -89,8 +89,6 @@ const userExists = async (userId: number) => {
   return data;
 };
 
-// TODO: SOLO DEBO DE PROBAR EL ENDPOINT
-
 const userLoginExists = async (username: string) => {
   const data = await repository.findUserForLogin(username);
 

@@ -1,8 +1,14 @@
+import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
+import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
 import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
 import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
+import { CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
+import * as cloudinaryService from "@/services/cloudinary";
+import * as catalogService from "@/catalogs/service";
 import * as repository from "@/guardian/repository";
+import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
@@ -92,6 +98,60 @@ export const getGuardianDocuments = async (
   logger.info(
     `[GUARDIAN-DOCUMENT] Documentos del tutor obtenidos - "${data.total}"`
   );
+
+  return data;
+};
+
+export const createGuardianDocument = async (
+  pathImage: string,
+  schema: CreateGuardianDocumentSchemaType,
+  guardianId: number
+) => {
+  const guardian = await existsGuardian(guardianId);
+  validateGuardianCanEdit(guardian.user.statusId);
+
+  await validateGuardianDocumentNotDuplicate(guardianId, schema.catalogItemId);
+  await catalogService.catalogItemExists(
+    CATALOGS.GUARDIAN_DOCUMENT_TYPES,
+    schema.catalogItemId
+  );
+
+  const newDocument = await cloudinaryService.uploadFile(
+    pathImage,
+    STORAGE_FOLDER_CLOUDINARY.GUARDIAN_DOCUMENT
+  );
+
+  await deleteTempFile(pathImage);
+
+  const updatedGuardian = await repository.createGuardianDocument(
+    schema.catalogItemId,
+    guardianId,
+    newDocument.public_id,
+    newDocument.secure_url
+  );
+
+  logger.info(
+    `[GUARDIAN-DOCUMENT] Documento creado - "${schema.catalogItemId}"`
+  );
+
+  return updatedGuardian;
+};
+
+export const existsGuardianDocument = async (
+  guardianId: number,
+  documentTypeId: number
+) => {
+  const data = await repository.existsGuardianDocument(
+    guardianId,
+    documentTypeId
+  );
+
+  if (!data) {
+    logger.warn(
+      `[GUARDIAN-DOCUMENT] Documento no encontrado - "${documentTypeId}"`
+    );
+    throw new HttpError(404, "No encontrado", "Documento no encontrado");
+  }
 
   return data;
 };

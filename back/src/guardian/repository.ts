@@ -143,3 +143,32 @@ export const getGuardianDocuments = async (
 
   return { data, total };
 };
+
+export const createGuardianDocument = async (
+  documentTypeId: number,
+  guardianId: number,
+  publicId: string,
+  url: string
+) => {
+  return await prisma.guardianDocument.create({
+    data: {
+      publicId,
+      url,
+      guardian: { connect: { guardianId } },
+      type: { connect: { catalogItemId: documentTypeId } },
+    },
+  });
+};
+
+export const existsGuardianDocument = async (
+  guardianId: number,
+  documentTypeId: number
+) => {
+  return await prisma.guardianDocument.findFirst({
+    where: { guardianId, documentTypeId },
+    select: {
+      guardianDocumentId: true,
+      publicId: true,
+    },
+  });
+};
