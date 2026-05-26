@@ -1,4 +1,5 @@
 import { CreateGuardianDocumentSchema } from "@/guardian/schemas/createGuardianDocument.schema";
+import { UpdateGuardianDocumentSchema } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { QueryGuardianDocumentSchema } from "@/guardian/schemas/queryGuardianDocument.schema";
 import { buildGuardianDocumentFilter } from "@/guardian/utils/buildGuardianDocumentFilter";
 import { CreateGuardianSchema } from "@/guardian/schemas/createGuardian.schema";
@@ -120,7 +121,7 @@ export const createGuardianDocument = async (req: Request, res: Response) => {
 
   await service.createGuardianDocument(file.tempFilePath, schema, guardianId);
 
-  return res.status(200).json(
+  return res.status(201).json(
     createResponse({
       message: {
         title: "Documento creado correctamente",
@@ -130,6 +131,25 @@ export const createGuardianDocument = async (req: Request, res: Response) => {
   );
 };
 
-export const updateGuardianDocument = async (req: Request, res: Response) => {};
+export const updateGuardianDocument = async (req: Request, res: Response) => {
+  const schema = validateSchema(UpdateGuardianDocumentSchema, req.body);
+  const file = validateFile(req.files?.document, "document");
+  const guardianId = Number(req.params.guardianId);
+  const documentId = Number(req.params.documentId);
 
-export const deleteGuardianDocument = async (req: Request, res: Response) => {};
+  await service.updateGuardianDocument(
+    file.tempFilePath,
+    guardianId,
+    documentId,
+    schema
+  );
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Documento actualizado correctamente",
+        detail: "Se ha actualizado el documento",
+      },
+    })
+  );
+};

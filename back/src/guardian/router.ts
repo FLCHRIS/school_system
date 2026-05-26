@@ -52,11 +52,5 @@ router.put(
   uploadMiddleware,
   controller.updateGuardianDocument
 );
-router.delete(
-  "/:guardianId/documents/:documentId",
-  authMiddleware,
-  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.deleteGuardianDocument
-);
 
 export default router;

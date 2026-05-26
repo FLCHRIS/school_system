@@ -1,4 +1,6 @@
+import { validateGuardianDocumentTypeCannotChange } from "@/guardian/policies/validateGuardianDocumentTypeMatches.policy";
 import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
+import { UpdateGuardianDocumentSchemaType } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
 import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
@@ -128,7 +130,7 @@ export const createGuardianDocument = async (
       STORAGE_FOLDER_CLOUDINARY.GUARDIAN_DOCUMENT
     );
 
-    const updatedGuardian = await repository.createGuardianDocument(
+    const createdDocument = await repository.createGuardianDocument(
       schema.catalogItemId,
       guardianId,
       newDocument.public_id,
@@ -136,10 +138,57 @@ export const createGuardianDocument = async (
     );
 
     logger.info(
-      `[GUARDIAN-DOCUMENT] Documento creado - "${schema.catalogItemId}"`
+      `[GUARDIAN-DOCUMENT] Documento creado - "${createdDocument.guardianDocumentId}"`
     );
 
-    return updatedGuardian;
+    return createdDocument;
+  } catch (error) {
+    if (newDocument) await cloudinaryService.deleteFile(newDocument.public_id);
+
+    throw error;
+  } finally {
+    await deleteTempFile(pathImage);
+  }
+};
+
+export const updateGuardianDocument = async (
+  pathImage: string,
+  guardianId: number,
+  documentId: number,
+  schema: UpdateGuardianDocumentSchemaType
+) => {
+  let newDocument: UploadApiResponse | null = null;
+
+  try {
+    const guardian = await existsGuardian(guardianId);
+    validateGuardianCanEdit(guardian.user.statusId);
+
+    const oldDocument = await existsGuardianDocument(documentId, guardianId);
+    await catalogService.catalogItemExists(
+      CATALOGS.GUARDIAN_DOCUMENT_TYPES,
+      schema.catalogItemId
+    );
+    validateGuardianDocumentTypeCannotChange(
+      oldDocument.documentTypeId,
+      schema.catalogItemId
+    );
+
+    newDocument = await cloudinaryService.uploadFile(
+      pathImage,
+      STORAGE_FOLDER_CLOUDINARY.GUARDIAN_DOCUMENT
+    );
+
+    const updatedDocument = await repository.updateGuardianDocument(
+      documentId,
+      newDocument.public_id,
+      newDocument.secure_url
+    );
+
+    await cloudinaryService.deleteFile(oldDocument.publicId);
+
+    logger.info(`[GUARDIAN-DOCUMENT] Documento actualizado - "${documentId}"`);
+
+    return updatedDocument;
   } catch (error) {
     if (newDocument) await cloudinaryService.deleteFile(newDocument.public_id);
 
@@ -150,18 +199,19 @@ export const createGuardianDocument = async (
 };
 
 export const existsGuardianDocument = async (
-  guardianId: number,
-  documentTypeId: number
+  guardianDocumentId: number,
+  guardianId: number
 ) => {
   const data = await repository.existsGuardianDocument(
-    guardianId,
-    documentTypeId
+    guardianDocumentId,
+    guardianId
   );
 
   if (!data) {
     logger.warn(
-      `[GUARDIAN-DOCUMENT] Documento no encontrado - "${documentTypeId}"`
+      `[GUARDIAN-DOCUMENT] Documento no encontrado - "${guardianDocumentId}"`
     );
+
     throw new HttpError(404, "No encontrado", "Documento no encontrado");
   }
 

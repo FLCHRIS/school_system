@@ -1,4 +1,5 @@
 import { searchGuardianDocumentQuery } from "@/guardian/queries/searchGuardianDocument";
+import { existsGuardianDocumentQuery } from "@/guardian/queries/existsGuardianDocument";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
 import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
@@ -160,15 +161,23 @@ export const createGuardianDocument = async (
   });
 };
 
+export const updateGuardianDocument = async (
+  guardianDocumentId: number,
+  publicId: string,
+  url: string
+) => {
+  return await prisma.guardianDocument.update({
+    where: { guardianDocumentId },
+    data: { publicId, url },
+  });
+};
+
 export const existsGuardianDocument = async (
-  guardianId: number,
-  documentTypeId: number
+  guardianDocumentId: number,
+  guardianId: number
 ) => {
   return await prisma.guardianDocument.findFirst({
-    where: { guardianId, documentTypeId },
-    select: {
-      guardianDocumentId: true,
-      publicId: true,
-    },
+    where: { guardianDocumentId, guardianId },
+    select: existsGuardianDocumentQuery,
   });
 };
