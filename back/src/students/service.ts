@@ -106,3 +106,25 @@ export const existsStudent = async (studentId: number) => {
 
   return data;
 };
+
+export const getStudentDocuments = async (
+  studentId: number,
+  filter: Prisma.CatalogItemWhereInput,
+  skip: number,
+  take: number
+) => {
+  await existsStudent(studentId);
+
+  const data = await studentRepository.getStudentDocuments(
+    studentId,
+    filter,
+    skip,
+    take
+  );
+
+  logger.info(
+    `[STUDENT-DOCUMENT] Documentos del estudiante obtenidos - "${data.total}"`
+  );
+
+  return data;
+};

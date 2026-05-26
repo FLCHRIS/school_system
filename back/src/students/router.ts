@@ -39,4 +39,11 @@ router.put(
   controller.updateStudent
 );
 
+router.get(
+  "/:studentId/documents",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  controller.getStudentDocuments
+);
+
 export default router;

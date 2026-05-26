@@ -1,9 +1,10 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
+import { searchStudentDocumentQuery } from "@/students/queries/searchStudentDocument";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { existsStudentQuery } from "@/students/queries/existsStudent";
 import { searchStudentQuery } from "@/students/queries/searchStudent";
+import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { STUDENT_STATUS } from "@/students/constants";
-import { USER_ROLES, USER_STATUS } from "@/constants";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
@@ -136,4 +137,29 @@ export const setEnrollmentNumber = async (
     where: { studentId },
     data: { enrollmentNumber },
   });
+};
+
+export const getStudentDocuments = async (
+  studentId: number,
+  filter: Prisma.CatalogItemWhereInput,
+  skip: number,
+  take: number
+) => {
+  const where: Prisma.CatalogItemWhereInput = {
+    catalogId: CATALOGS.STUDENT_DOCUMENT_TYPES,
+    isActive: true,
+    ...filter,
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.catalogItem.findMany({
+      take,
+      skip,
+      where,
+      select: searchStudentDocumentQuery(studentId),
+    }),
+    prisma.catalogItem.count({ where }),
+  ]);
+
+  return { data, total };
 };

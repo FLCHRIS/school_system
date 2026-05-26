@@ -1,3 +1,5 @@
+import { QueryStudentDocumentSchema } from "@/students/schemas/queryStudentDocument.schema";
+import { buildStudentDocumentFilter } from "@/students/utils/buildStudentDocumentFilter";
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
 import { UpdateStudentSchema } from "@/students/schemas/updateStudent.schema";
 import { QueryStudentSchema } from "@/students/schemas/queryStudent.schema";
@@ -76,6 +78,34 @@ export const updateStudent = async (req: Request, res: Response) => {
       message: {
         title: "Estudiante actualizado correctamente",
         detail: "Se ha actualizado el estudiante",
+      },
+    })
+  );
+};
+
+export const getStudentDocuments = async (req: Request, res: Response) => {
+  const schema = validateSchema(QueryStudentDocumentSchema, req.query);
+  const studentId = Number(req.params.studentId);
+
+  const pagination = getPagination(schema.page, schema.size);
+  const filter = buildStudentDocumentFilter(schema);
+
+  const { data, total } = await service.getStudentDocuments(
+    studentId,
+    filter,
+    pagination.skip,
+    pagination.take
+  );
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Estudiantes obtenidos correctamente",
+        detail: "Se han obtenido los estudiantes",
+      },
+      data,
+      meta: {
+        pagination: buildPaginationMeta(total, schema.page, schema.size),
       },
     })
   );
