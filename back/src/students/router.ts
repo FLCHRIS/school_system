@@ -1,4 +1,5 @@
 import { allowRolesMiddleware } from "@/middlewares/allowRoles.middlewares";
+import { uploadMiddleware } from "@/middlewares/upload.middlewares";
 import { authMiddleware } from "@/middlewares/auth.middlewares";
 import * as controller from "@/students/controller";
 import { USER_ROLES } from "@/constants";
@@ -44,6 +45,14 @@ router.get(
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.getStudentDocuments
+);
+
+router.post(
+  "/:studentId/documents",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  uploadMiddleware,
+  controller.createStudentDocument
 );
 
 export default router;

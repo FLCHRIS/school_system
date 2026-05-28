@@ -1,5 +1,6 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
 import { searchStudentDocumentQuery } from "@/students/queries/searchStudentDocument";
+import { existsStudentDocumentQuery } from "@/students/queries/existsStudentDocument";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { existsStudentQuery } from "@/students/queries/existsStudent";
 import { searchStudentQuery } from "@/students/queries/searchStudent";
@@ -162,4 +163,30 @@ export const getStudentDocuments = async (
   ]);
 
   return { data, total };
+};
+
+export const createStudentDocument = async (
+  documentTypeId: number,
+  studentId: number,
+  publicId: string,
+  url: string
+) => {
+  return await prisma.studentDocument.create({
+    data: {
+      publicId,
+      url,
+      student: { connect: { studentId } },
+      type: { connect: { catalogItemId: documentTypeId } },
+    },
+  });
+};
+
+export const existsStudentDocument = async (
+  studentDocumentId: number,
+  studentId: number
+) => {
+  return await prisma.studentDocument.findFirst({
+    where: { studentDocumentId, studentId },
+    select: existsStudentDocumentQuery,
+  });
 };

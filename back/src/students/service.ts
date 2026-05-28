@@ -2,15 +2,21 @@ import {
   CreateStudentSchemaType,
   StudentWithExistingGuardianSchemaType,
 } from "@/students/schemas/createStudent.schema";
+import { validateStudentDocumentNotDuplicate } from "@/students/policies/validateStudentDocumentNotDuplicate.policy";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
+import { CreateStudentDocumentSchemaType } from "@/students/schemas/createStudentDocument.schema";
 import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
 import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
+import { SCHOOL_CODE, CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
+import * as cloudinaryService from "@/services/cloudinary";
 import * as studentRepository from "@/students/repository";
 import * as guardianService from "@/guardian/service";
+import * as catalogService from "@/catalogs/service";
+import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
-import { SCHOOL_CODE } from "@/constants";
+import { UploadApiResponse } from "cloudinary";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
@@ -127,4 +133,47 @@ export const getStudentDocuments = async (
   );
 
   return data;
+};
+
+export const createStudentDocument = async (
+  pathImage: string,
+  schema: CreateStudentDocumentSchemaType,
+  studentId: number
+) => {
+  let newDocument: UploadApiResponse | null = null;
+
+  try {
+    const student = await existsStudent(studentId);
+    validateStudentCanEdit(student.studentStatusId);
+
+    await validateStudentDocumentNotDuplicate(studentId, schema.catalogItemId);
+    await catalogService.catalogItemExists(
+      CATALOGS.STUDENT_DOCUMENT_TYPES,
+      schema.catalogItemId
+    );
+
+    newDocument = await cloudinaryService.uploadFile(
+      pathImage,
+      STORAGE_FOLDER_CLOUDINARY.STUDENT_DOCUMENT
+    );
+
+    const createdDocument = await studentRepository.createStudentDocument(
+      schema.catalogItemId,
+      studentId,
+      newDocument.public_id,
+      newDocument.secure_url
+    );
+
+    logger.info(
+      `[STUDENT-DOCUMENT] Documento creado - "${createdDocument.studentDocumentId}"`
+    );
+
+    return createdDocument;
+  } catch (error) {
+    if (newDocument) await cloudinaryService.deleteFile(newDocument.public_id);
+
+    throw error;
+  } finally {
+    await deleteTempFile(pathImage);
+  }
 };

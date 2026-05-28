@@ -1,3 +1,4 @@
+import { CreateStudentDocumentSchema } from "@/students/schemas/createStudentDocument.schema";
 import { QueryStudentDocumentSchema } from "@/students/schemas/queryStudentDocument.schema";
 import { buildStudentDocumentFilter } from "@/students/utils/buildStudentDocumentFilter";
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
@@ -7,6 +8,7 @@ import { buildStudentFilter } from "@/students/utils/buildStudentFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";
+import { validateFile } from "@/utils/validateFile";
 import * as service from "@/students/service";
 import { Request, Response } from "express";
 
@@ -106,6 +108,23 @@ export const getStudentDocuments = async (req: Request, res: Response) => {
       data,
       meta: {
         pagination: buildPaginationMeta(total, schema.page, schema.size),
+      },
+    })
+  );
+};
+
+export const createStudentDocument = async (req: Request, res: Response) => {
+  const schema = validateSchema(CreateStudentDocumentSchema, req.body);
+  const file = validateFile(req.files?.document, "document");
+  const studentId = Number(req.params.studentId);
+
+  await service.createStudentDocument(file.tempFilePath, schema, studentId);
+
+  return res.status(201).json(
+    createResponse({
+      message: {
+        title: "Documento creado correctamente",
+        detail: "Se ha creado el documento",
       },
     })
   );
