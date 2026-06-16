@@ -6,9 +6,9 @@ export const buildStudentDocumentFilter = (
 ) => {
   const filter: Prisma.CatalogItemWhereInput = {};
 
-  if (schema.catalogItemId?.length) {
+  if (schema.documentTypeId?.length) {
     filter.catalogItemId = {
-      in: schema.catalogItemId,
+      in: schema.documentTypeId,
     };
   }
 
