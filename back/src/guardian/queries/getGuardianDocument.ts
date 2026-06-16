@@ -1,4 +1,4 @@
-export const existsGuardianDocumentQuery = {
+export const getGuardianDocumentQuery = {
   guardianDocumentId: true,
   documentTypeId: true,
   publicId: true,

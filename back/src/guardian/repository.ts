@@ -1,14 +1,14 @@
 import { searchGuardianDocumentQuery } from "@/guardian/queries/searchGuardianDocument";
-import { existsGuardianDocumentQuery } from "@/guardian/queries/existsGuardianDocument";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
-import { existsGuardianQuery } from "@/guardian/queries/existsGuardian";
+import { getGuardianDocumentQuery } from "@/guardian/queries/getGuardianDocument";
 import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
+import { getGuardianQuery } from "@/guardian/queries/getGuardian";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
-export const getGuardians = async (
+export const searchGuardians = async (
   filter: Prisma.GuardianWhereInput[],
   skip: number,
   take: number
@@ -26,7 +26,7 @@ export const getGuardians = async (
   return { data, total };
 };
 
-export const getGuardian = async (guardianId: number) => {
+export const searchGuardian = async (guardianId: number) => {
   return await prisma.guardian.findUnique({
     where: { guardianId },
     select: searchGuardianQuery,
@@ -113,14 +113,14 @@ export const updateGuardian = async (
   });
 };
 
-export const existsGuardian = async (guardianId: number) => {
+export const getGuardian = async (guardianId: number) => {
   return await prisma.guardian.findUnique({
     where: { guardianId },
-    select: existsGuardianQuery,
+    select: getGuardianQuery,
   });
 };
 
-export const getGuardianDocuments = async (
+export const searchGuardianDocuments = async (
   guardianId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
@@ -172,22 +172,22 @@ export const updateGuardianDocument = async (
   });
 };
 
-export const existsGuardianDocument = async (
+export const getGuardianDocument = async (
   guardianDocumentId: number,
   guardianId: number
 ) => {
   return await prisma.guardianDocument.findFirst({
     where: { guardianDocumentId, guardianId },
-    select: existsGuardianDocumentQuery,
+    select: getGuardianDocumentQuery,
   });
 };
 
-export const existsGuardianDocumentByType = async (
+export const getGuardianDocumentByType = async (
   guardianId: number,
   documentTypeId: number
 ) => {
   return await prisma.guardianDocument.findFirst({
     where: { guardianId, documentTypeId },
-    select: existsGuardianDocumentQuery,
+    select: getGuardianDocumentQuery,
   });
 };

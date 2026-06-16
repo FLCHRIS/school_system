@@ -11,13 +11,13 @@ router.get(
   "/",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.getGuardians
+  controller.searchGuardians
 );
 router.get(
   "/:guardianId",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.getGuardian
+  controller.searchGuardian
 );
 router.post(
   "/",
@@ -36,7 +36,7 @@ router.get(
   "/:guardianId/documents",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.getGuardianDocuments
+  controller.searchGuardianDocuments
 );
 router.post(
   "/:guardianId/documents",

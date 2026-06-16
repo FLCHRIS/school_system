@@ -13,13 +13,13 @@ import { validateFile } from "@/utils/validateFile";
 import * as service from "@/guardian/service";
 import { Request, Response } from "express";
 
-export const getGuardians = async (req: Request, res: Response) => {
+export const searchGuardians = async (req: Request, res: Response) => {
   const schema = validateSchema(QueryGuardianSchema, req.query);
 
   const pagination = getPagination(schema.page, schema.size);
   const filter = buildGuardianFilter(schema);
 
-  const { data, total } = await service.getGuardians(
+  const { data, total } = await service.searchGuardians(
     filter,
     pagination.skip,
     pagination.take
@@ -39,10 +39,10 @@ export const getGuardians = async (req: Request, res: Response) => {
   );
 };
 
-export const getGuardian = async (req: Request, res: Response) => {
+export const searchGuardian = async (req: Request, res: Response) => {
   const guardianId = Number(req.params.guardianId);
 
-  const data = await service.getGuardian(guardianId);
+  const data = await service.searchGuardian(guardianId);
 
   return res.status(200).json(
     createResponse({
@@ -86,14 +86,14 @@ export const updateGuardian = async (req: Request, res: Response) => {
   );
 };
 
-export const getGuardianDocuments = async (req: Request, res: Response) => {
+export const searchGuardianDocuments = async (req: Request, res: Response) => {
   const schema = validateSchema(QueryGuardianDocumentSchema, req.query);
   const guardianId = Number(req.params.guardianId);
 
   const pagination = getPagination(schema.page, schema.size);
   const filter = buildGuardianDocumentFilter(schema);
 
-  const { data, total } = await service.getGuardianDocuments(
+  const { data, total } = await service.searchGuardianDocuments(
     guardianId,
     filter,
     pagination.skip,

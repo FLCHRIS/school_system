@@ -16,22 +16,22 @@ import { UploadApiResponse } from "cloudinary";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
-export const getGuardians = async (
+export const searchGuardians = async (
   filter: Prisma.GuardianWhereInput[],
   skip: number,
   take: number
 ) => {
-  const data = await repository.getGuardians(filter, skip, take);
+  const data = await repository.searchGuardians(filter, skip, take);
 
   logger.info(`[GUARDIAN] Tutores obtenidos - "${data.total}"`);
 
   return data;
 };
 
-export const getGuardian = async (guardianId: number) => {
+export const searchGuardian = async (guardianId: number) => {
   await existsGuardian(guardianId);
 
-  const data = await repository.getGuardian(guardianId);
+  const data = await repository.searchGuardian(guardianId);
 
   logger.info(`[GUARDIAN] Tutor obtenido - "${guardianId}"`);
 
@@ -73,7 +73,7 @@ export const updateGuardian = async (
 };
 
 export const existsGuardian = async (guardianId: number) => {
-  const data = await repository.existsGuardian(guardianId);
+  const data = await repository.getGuardian(guardianId);
 
   if (!data) {
     logger.warn(`[GUARDIAN] Tutor no encontrado - "${guardianId}"`);
@@ -83,7 +83,7 @@ export const existsGuardian = async (guardianId: number) => {
   return data;
 };
 
-export const getGuardianDocuments = async (
+export const searchGuardianDocuments = async (
   guardianId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
@@ -91,7 +91,7 @@ export const getGuardianDocuments = async (
 ) => {
   await existsGuardian(guardianId);
 
-  const data = await repository.getGuardianDocuments(
+  const data = await repository.searchGuardianDocuments(
     guardianId,
     filter,
     skip,
@@ -202,7 +202,7 @@ export const existsGuardianDocument = async (
   guardianDocumentId: number,
   guardianId: number
 ) => {
-  const data = await repository.existsGuardianDocument(
+  const data = await repository.getGuardianDocument(
     guardianDocumentId,
     guardianId
   );

@@ -1,4 +1,4 @@
-export const existsGuardianQuery = {
+export const getGuardianQuery = {
   guardianId: true,
   user: {
     select: {
