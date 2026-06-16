@@ -6,7 +6,7 @@ export const validateGuardianDocumentNotDuplicate = async (
   guardianId: number,
   documentTypeId: number
 ) => {
-  const data = await repository.existsGuardianDocument(
+  const data = await repository.existsGuardianDocumentByType(
     guardianId,
     documentTypeId
   );

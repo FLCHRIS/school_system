@@ -116,12 +116,12 @@ export const createGuardianDocument = async (
     const guardian = await existsGuardian(guardianId);
     validateGuardianCanEdit(guardian.user.statusId);
 
-    await validateGuardianDocumentNotDuplicate(
-      guardianId,
-      schema.catalogItemId
-    );
     await catalogService.catalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
+      schema.catalogItemId
+    );
+    await validateGuardianDocumentNotDuplicate(
+      guardianId,
       schema.catalogItemId
     );
 

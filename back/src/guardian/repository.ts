@@ -181,3 +181,13 @@ export const existsGuardianDocument = async (
     select: existsGuardianDocumentQuery,
   });
 };
+
+export const existsGuardianDocumentByType = async (
+  guardianId: number,
+  documentTypeId: number
+) => {
+  return await prisma.guardianDocument.findFirst({
+    where: { guardianId, documentTypeId },
+    select: existsGuardianDocumentQuery,
+  });
+};
