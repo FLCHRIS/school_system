@@ -118,11 +118,11 @@ export const createGuardianDocument = async (
 
     await catalogService.catalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
-      schema.catalogItemId
+      schema.documentTypeId
     );
     await validateGuardianDocumentNotDuplicate(
       guardianId,
-      schema.catalogItemId
+      schema.documentTypeId
     );
 
     newDocument = await cloudinaryService.uploadFile(
@@ -131,7 +131,7 @@ export const createGuardianDocument = async (
     );
 
     const createdDocument = await repository.createGuardianDocument(
-      schema.catalogItemId,
+      schema.documentTypeId,
       guardianId,
       newDocument.public_id,
       newDocument.secure_url
@@ -166,11 +166,11 @@ export const updateGuardianDocument = async (
     const oldDocument = await existsGuardianDocument(documentId, guardianId);
     await catalogService.catalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
-      schema.catalogItemId
+      schema.documentTypeId
     );
     validateGuardianDocumentTypeCannotChange(
       oldDocument.documentTypeId,
-      schema.catalogItemId
+      schema.documentTypeId
     );
 
     newDocument = await cloudinaryService.uploadFile(

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const CreateGuardianDocumentSchema = z.object({
-  catalogItemId: z.coerce
+  documentTypeId: z.coerce
     .number({
       error: "El tipo de documento es obligatorio",
     })
