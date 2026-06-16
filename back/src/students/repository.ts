@@ -181,6 +181,17 @@ export const createStudentDocument = async (
   });
 };
 
+export const updateStudentDocument = async (
+  studentDocumentId: number,
+  publicId: string,
+  url: string
+) => {
+  return await prisma.studentDocument.update({
+    where: { studentDocumentId },
+    data: { publicId, url },
+  });
+};
+
 export const getStudentDocument = async (
   studentDocumentId: number,
   studentId: number

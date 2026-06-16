@@ -1,4 +1,5 @@
 import { CreateStudentDocumentSchema } from "@/students/schemas/createStudentDocument.schema";
+import { UpdateStudentDocumentSchema } from "@/students/schemas/updateStudentDocument.schema";
 import { QueryStudentDocumentSchema } from "@/students/schemas/queryStudentDocument.schema";
 import { buildStudentDocumentFilter } from "@/students/utils/buildStudentDocumentFilter";
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
@@ -125,6 +126,29 @@ export const createStudentDocument = async (req: Request, res: Response) => {
       message: {
         title: "Documento creado correctamente",
         detail: "Se ha creado el documento",
+      },
+    })
+  );
+};
+
+export const updateStudentDocument = async (req: Request, res: Response) => {
+  const schema = validateSchema(UpdateStudentDocumentSchema, req.body);
+  const file = validateFile(req.files?.document, "document");
+  const documentId = Number(req.params.documentId);
+  const studentId = Number(req.params.studentId);
+
+  await service.updateStudentDocument(
+    file.tempFilePath,
+    studentId,
+    documentId,
+    schema
+  );
+
+  return res.status(200).json(
+    createResponse({
+      message: {
+        title: "Documento actualizado correctamente",
+        detail: "Se ha actualizado el documento",
       },
     })
   );

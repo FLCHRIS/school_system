@@ -53,5 +53,12 @@ router.post(
   uploadMiddleware,
   controller.createStudentDocument
 );
+router.put(
+  "/:studentId/documents/:documentId",
+  authMiddleware,
+  allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
+  uploadMiddleware,
+  controller.updateStudentDocument
+);
 
 export default router;

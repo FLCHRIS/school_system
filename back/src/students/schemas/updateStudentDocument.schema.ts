@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CreateStudentDocumentSchema = z.object({
+export const UpdateStudentDocumentSchema = z.object({
   documentTypeId: z.coerce
     .number({
       error: "El tipo de documento es obligatorio",
@@ -10,6 +10,6 @@ export const CreateStudentDocumentSchema = z.object({
     }),
 });
 
-export type CreateStudentDocumentSchemaType = z.infer<
-  typeof CreateStudentDocumentSchema
+export type UpdateStudentDocumentSchemaType = z.infer<
+  typeof UpdateStudentDocumentSchema
 >;

@@ -5,6 +5,8 @@ import {
 import { validateStudentDocumentNotDuplicate } from "@/students/policies/validateStudentDocumentNotDuplicate.policy";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
 import { CreateStudentDocumentSchemaType } from "@/students/schemas/createStudentDocument.schema";
+import { UpdateStudentDocumentSchemaType } from "@/students/schemas/updateStudentDocument.schema";
+import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
 import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
 import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
@@ -148,9 +150,9 @@ export const createStudentDocument = async (
 
     await catalogService.catalogItemExists(
       CATALOGS.STUDENT_DOCUMENT_TYPES,
-      schema.catalogItemId
+      schema.documentTypeId
     );
-    await validateStudentDocumentNotDuplicate(studentId, schema.catalogItemId);
+    await validateStudentDocumentNotDuplicate(studentId, schema.documentTypeId);
 
     newDocument = await cloudinaryService.uploadFile(
       pathImage,
@@ -158,7 +160,7 @@ export const createStudentDocument = async (
     );
 
     const createdDocument = await studentRepository.createStudentDocument(
-      schema.catalogItemId,
+      schema.documentTypeId,
       studentId,
       newDocument.public_id,
       newDocument.secure_url
@@ -176,4 +178,71 @@ export const createStudentDocument = async (
   } finally {
     await deleteTempFile(pathImage);
   }
+};
+
+export const updateStudentDocument = async (
+  pathImage: string,
+  studentId: number,
+  documentId: number,
+  schema: UpdateStudentDocumentSchemaType
+) => {
+  let newDocument: UploadApiResponse | null = null;
+
+  try {
+    const student = await existsStudent(studentId);
+    validateStudentCanEdit(student.studentStatusId);
+
+    const oldDocument = await existsStudentDocument(documentId, studentId);
+    await catalogService.catalogItemExists(
+      CATALOGS.STUDENT_DOCUMENT_TYPES,
+      schema.documentTypeId
+    );
+    validateDocumentTypeCannotChange(
+      oldDocument.documentTypeId,
+      schema.documentTypeId
+    );
+
+    newDocument = await cloudinaryService.uploadFile(
+      pathImage,
+      STORAGE_FOLDER_CLOUDINARY.STUDENT_DOCUMENT
+    );
+
+    const updatedDocument = await studentRepository.updateStudentDocument(
+      documentId,
+      newDocument.public_id,
+      newDocument.secure_url
+    );
+
+    await cloudinaryService.deleteFile(oldDocument.publicId);
+
+    logger.info(`[STUDENT-DOCUMENT] Documento actualizado - "${documentId}"`);
+
+    return updatedDocument;
+  } catch (error) {
+    if (newDocument) await cloudinaryService.deleteFile(newDocument.public_id);
+
+    throw error;
+  } finally {
+    await deleteTempFile(pathImage);
+  }
+};
+
+export const existsStudentDocument = async (
+  studentDocumentId: number,
+  studentId: number
+) => {
+  const data = await studentRepository.getStudentDocument(
+    studentDocumentId,
+    studentId
+  );
+
+  if (!data) {
+    logger.warn(
+      `[STUDENT-DOCUMENT] Documento no encontrado - "${studentDocumentId}"`
+    );
+
+    throw new HttpError(404, "No encontrado", "Documento no encontrado");
+  }
+
+  return data;
 };
