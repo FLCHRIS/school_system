@@ -3,7 +3,7 @@ import { numberFilterSchema } from "@/utils/numberFilterSchema";
 import { z } from "zod";
 
 export const GuardianDocumentFiltersSchema = z.object({
-  catalogItemId: numberFilterSchema().optional(),
+  documentTypeId: numberFilterSchema().optional(),
 });
 
 export const QueryGuardianDocumentSchema = GuardianDocumentFiltersSchema.extend(
