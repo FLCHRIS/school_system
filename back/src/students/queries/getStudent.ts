@@ -1,4 +1,4 @@
-export const existsStudentQuery = {
+export const getStudentQuery = {
   studentId: true,
   studentStatusId: true,
   user: {

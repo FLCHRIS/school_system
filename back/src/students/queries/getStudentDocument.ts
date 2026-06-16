@@ -1,4 +1,4 @@
-export const existsStudentDocumentQuery = {
+export const getStudentDocumentQuery = {
   studentDocumentId: true,
   documentTypeId: true,
   publicId: true,

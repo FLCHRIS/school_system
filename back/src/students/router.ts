@@ -15,7 +15,7 @@ router.get(
     USER_ROLES.SECRETARY,
     USER_ROLES.TEACHER,
   ]),
-  controller.getStudents
+  controller.searchStudents
 );
 router.get(
   "/:studentId",
@@ -25,7 +25,7 @@ router.get(
     USER_ROLES.SECRETARY,
     USER_ROLES.TEACHER,
   ]),
-  controller.getStudent
+  controller.searchStudent
 );
 router.post(
   "/",
@@ -44,7 +44,7 @@ router.get(
   "/:studentId/documents",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
-  controller.getStudentDocuments
+  controller.searchStudentDocuments
 );
 router.post(
   "/:studentId/documents",

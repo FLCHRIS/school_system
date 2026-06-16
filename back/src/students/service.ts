@@ -20,22 +20,22 @@ import { UploadApiResponse } from "cloudinary";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
-export const getStudents = async (
+export const searchStudents = async (
   filter: Prisma.StudentWhereInput[],
   skip: number,
   take: number
 ) => {
-  const data = await studentRepository.getStudents(filter, skip, take);
+  const data = await studentRepository.searchStudents(filter, skip, take);
 
   logger.info(`[STUDENT] Estudiantes obtenidos - "${data.total}"`);
 
   return data;
 };
 
-export const getStudent = async (studentId: number) => {
+export const searchStudent = async (studentId: number) => {
   await existsStudent(studentId);
 
-  const data = await studentRepository.getStudent(studentId);
+  const data = await studentRepository.searchStudent(studentId);
 
   logger.info(`[STUDENT] Estudiante obtenido - "${studentId}"`);
 
@@ -103,7 +103,7 @@ export const updateStudent = async (
 };
 
 export const existsStudent = async (studentId: number) => {
-  const data = await studentRepository.existsStudent(studentId);
+  const data = await studentRepository.getStudent(studentId);
 
   if (!data) {
     logger.warn(`[STUDENT] Estudiante no encontrado - "${studentId}"`);
@@ -113,7 +113,7 @@ export const existsStudent = async (studentId: number) => {
   return data;
 };
 
-export const getStudentDocuments = async (
+export const searchStudentDocuments = async (
   studentId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
@@ -121,7 +121,7 @@ export const getStudentDocuments = async (
 ) => {
   await existsStudent(studentId);
 
-  const data = await studentRepository.getStudentDocuments(
+  const data = await studentRepository.searchStudentDocuments(
     studentId,
     filter,
     skip,

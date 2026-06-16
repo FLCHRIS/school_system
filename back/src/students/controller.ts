@@ -12,13 +12,13 @@ import { validateFile } from "@/utils/validateFile";
 import * as service from "@/students/service";
 import { Request, Response } from "express";
 
-export const getStudents = async (req: Request, res: Response) => {
+export const searchStudents = async (req: Request, res: Response) => {
   const schema = validateSchema(QueryStudentSchema, req.query);
 
   const pagination = getPagination(schema.page, schema.size);
   const filter = buildStudentFilter(schema);
 
-  const { data, total } = await service.getStudents(
+  const { data, total } = await service.searchStudents(
     filter,
     pagination.skip,
     pagination.take
@@ -38,10 +38,10 @@ export const getStudents = async (req: Request, res: Response) => {
   );
 };
 
-export const getStudent = async (req: Request, res: Response) => {
+export const searchStudent = async (req: Request, res: Response) => {
   const studentId = Number(req.params.studentId);
 
-  const data = await service.getStudent(studentId);
+  const data = await service.searchStudent(studentId);
 
   return res.status(200).json(
     createResponse({
@@ -85,14 +85,14 @@ export const updateStudent = async (req: Request, res: Response) => {
   );
 };
 
-export const getStudentDocuments = async (req: Request, res: Response) => {
+export const searchStudentDocuments = async (req: Request, res: Response) => {
   const schema = validateSchema(QueryStudentDocumentSchema, req.query);
   const studentId = Number(req.params.studentId);
 
   const pagination = getPagination(schema.page, schema.size);
   const filter = buildStudentDocumentFilter(schema);
 
-  const { data, total } = await service.getStudentDocuments(
+  const { data, total } = await service.searchStudentDocuments(
     studentId,
     filter,
     pagination.skip,

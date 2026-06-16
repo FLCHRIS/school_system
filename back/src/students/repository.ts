@@ -1,15 +1,15 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
 import { searchStudentDocumentQuery } from "@/students/queries/searchStudentDocument";
-import { existsStudentDocumentQuery } from "@/students/queries/existsStudentDocument";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
-import { existsStudentQuery } from "@/students/queries/existsStudent";
+import { getStudentDocumentQuery } from "@/students/queries/getStudentDocument";
 import { searchStudentQuery } from "@/students/queries/searchStudent";
+import { getStudentQuery } from "@/students/queries/getStudent";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { STUDENT_STATUS } from "@/students/constants";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
-export const getStudents = async (
+export const searchStudents = async (
   filter: Prisma.StudentWhereInput[],
   skip: number,
   take: number
@@ -27,7 +27,7 @@ export const getStudents = async (
   return { data, total };
 };
 
-export const getStudent = async (studentId: number) => {
+export const searchStudent = async (studentId: number) => {
   return await prisma.student.findUnique({
     where: { studentId },
     select: searchStudentQuery,
@@ -123,10 +123,10 @@ export const updateStudent = async (
   });
 };
 
-export const existsStudent = async (studentId: number) => {
+export const getStudent = async (studentId: number) => {
   return await prisma.student.findUnique({
     where: { studentId },
-    select: existsStudentQuery,
+    select: getStudentQuery,
   });
 };
 
@@ -140,7 +140,7 @@ export const setEnrollmentNumber = async (
   });
 };
 
-export const getStudentDocuments = async (
+export const searchStudentDocuments = async (
   studentId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
@@ -181,22 +181,22 @@ export const createStudentDocument = async (
   });
 };
 
-export const existsStudentDocument = async (
+export const getStudentDocument = async (
   studentDocumentId: number,
   studentId: number
 ) => {
   return await prisma.studentDocument.findFirst({
     where: { studentDocumentId, studentId },
-    select: existsStudentDocumentQuery,
+    select: getStudentDocumentQuery,
   });
 };
 
-export const existsStudentDocumentByType = async (
+export const getStudentDocumentByType = async (
   studentId: number,
   documentTypeId: number
 ) => {
   return await prisma.studentDocument.findFirst({
     where: { studentId, documentTypeId },
-    select: existsStudentDocumentQuery,
+    select: getStudentDocumentQuery,
   });
 };
