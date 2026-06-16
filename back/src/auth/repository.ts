@@ -1,6 +1,6 @@
 import { searchUserQuery } from "@/auth/queries/searchUser";
-import { existsUserQuery } from "@/auth/queries/existsUser";
 import { logInUserQuery } from "@/auth/queries/logInUser";
+import { getUserQuery } from "@/auth/queries/getUser";
 import { prisma } from "@/config/prisma";
 
 export const findUserForLogin = async (username: string) => {
@@ -17,10 +17,10 @@ export const findUserForGetMe = async (userId: number) => {
   });
 };
 
-export const existsUser = async (userId: number) => {
+export const getUser = async (userId: number) => {
   return await prisma.user.findUnique({
     where: { userId },
-    select: existsUserQuery,
+    select: getUserQuery,
   });
 };
 

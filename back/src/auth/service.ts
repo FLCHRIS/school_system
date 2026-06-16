@@ -92,7 +92,7 @@ export const updateProfilePhoto = async (pathImage: string, userId: number) => {
 };
 
 const userExists = async (userId: number) => {
-  const data = await repository.existsUser(userId);
+  const data = await repository.getUser(userId);
 
   if (!data) {
     logger.warn(`[AUTH] Usuario no encontrado - "${userId}"`);
