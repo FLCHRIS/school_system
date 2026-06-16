@@ -146,11 +146,11 @@ export const createStudentDocument = async (
     const student = await existsStudent(studentId);
     validateStudentCanEdit(student.studentStatusId);
 
-    await validateStudentDocumentNotDuplicate(studentId, schema.catalogItemId);
     await catalogService.catalogItemExists(
       CATALOGS.STUDENT_DOCUMENT_TYPES,
       schema.catalogItemId
     );
+    await validateStudentDocumentNotDuplicate(studentId, schema.catalogItemId);
 
     newDocument = await cloudinaryService.uploadFile(
       pathImage,

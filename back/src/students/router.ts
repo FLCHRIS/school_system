@@ -46,7 +46,6 @@ router.get(
   allowRolesMiddleware([USER_ROLES.DIRECTOR, USER_ROLES.SECRETARY]),
   controller.getStudentDocuments
 );
-
 router.post(
   "/:studentId/documents",
   authMiddleware,

@@ -6,7 +6,7 @@ export const validateStudentDocumentNotDuplicate = async (
   studentId: number,
   documentTypeId: number
 ) => {
-  const data = await repository.existsStudentDocument(
+  const data = await repository.existsStudentDocumentByType(
     studentId,
     documentTypeId
   );

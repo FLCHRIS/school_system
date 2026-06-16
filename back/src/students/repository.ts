@@ -190,3 +190,13 @@ export const existsStudentDocument = async (
     select: existsStudentDocumentQuery,
   });
 };
+
+export const existsStudentDocumentByType = async (
+  studentId: number,
+  documentTypeId: number
+) => {
+  return await prisma.studentDocument.findFirst({
+    where: { studentId, documentTypeId },
+    select: existsStudentDocumentQuery,
+  });
+};
