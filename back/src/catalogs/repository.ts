@@ -4,7 +4,7 @@ import { searchCatalogQuery } from "@/catalogs/queries/searchCatalog";
 import { prisma } from "@/config/prisma";
 import { Prisma } from "@prisma/client";
 
-export const getCatalogs = async (
+export const searchCatalogs = async (
   filter: Prisma.CatalogWhereInput,
   skip: number,
   take: number

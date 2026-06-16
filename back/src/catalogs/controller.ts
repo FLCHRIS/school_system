@@ -8,13 +8,13 @@ import { createResponse } from "@/utils/apiResponse";
 import * as service from "@/catalogs/service";
 import { Request, Response } from "express";
 
-export const getCatalogs = async (req: Request, res: Response) => {
+export const searchCatalogs = async (req: Request, res: Response) => {
   const schema = validateSchema(QueryCatalogSchema, req.query);
 
   const pagination = getPagination(schema.page, schema.size);
   const filter = buildCatalogFilter(schema);
 
-  const { data, total } = await service.getCatalogs(
+  const { data, total } = await service.searchCatalogs(
     filter,
     pagination.skip,
     pagination.take

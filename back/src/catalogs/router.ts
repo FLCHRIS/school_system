@@ -10,7 +10,7 @@ router.get(
   "/",
   authMiddleware,
   allowRolesMiddleware([USER_ROLES.DIRECTOR]),
-  controller.getCatalogs
+  controller.searchCatalogs
 );
 
 router.get("/:catalogId/items", controller.getCatalogItems);

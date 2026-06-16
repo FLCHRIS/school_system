@@ -6,12 +6,12 @@ import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
-export const getCatalogs = async (
+export const searchCatalogs = async (
   filter: Prisma.CatalogWhereInput,
   skip: number,
   take: number
 ) => {
-  const data = await repository.getCatalogs(filter, skip, take);
+  const data = await repository.searchCatalogs(filter, skip, take);
 
   logger.info(`[CATALOG] Catálogos obtenidos - "${data.total}"`);
 
