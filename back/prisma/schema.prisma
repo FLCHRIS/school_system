@@ -201,6 +201,8 @@ model StudentDocument {
 
   student Student     @relation(fields: [studentId], references: [studentId])
   type    CatalogItem @relation("StudentDocumentType", fields: [documentTypeId], references: [catalogItemId])
+
+  @@unique([studentId, documentTypeId])
 }
 
 model GuardianDocument {
@@ -217,6 +219,8 @@ model GuardianDocument {
 
   guardian Guardian    @relation(fields: [guardianId], references: [guardianId])
   type     CatalogItem @relation("GuardianDocumentType", fields: [documentTypeId], references: [catalogItemId])
+
+  @@unique([guardianId, documentTypeId])
 }
 
 model SchoolCycle {
