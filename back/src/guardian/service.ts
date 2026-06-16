@@ -1,7 +1,7 @@
-import { validateGuardianDocumentTypeCannotChange } from "@/guardian/policies/validateGuardianDocumentTypeMatches.policy";
 import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
 import { UpdateGuardianDocumentSchemaType } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
+import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
 import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
@@ -168,7 +168,7 @@ export const updateGuardianDocument = async (
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
       schema.documentTypeId
     );
-    validateGuardianDocumentTypeCannotChange(
+    validateDocumentTypeCannotChange(
       oldDocument.documentTypeId,
       schema.documentTypeId
     );
