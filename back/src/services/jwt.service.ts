@@ -1,5 +1,5 @@
 import { JWTPayload, DecodedToken } from "@/types/auth.types";
-import { env } from "@/config/env";
+import { env } from "@/config/env.config";
 import jwt from "jsonwebtoken";
 
 export const signAccessToken = (payload: JWTPayload) => {

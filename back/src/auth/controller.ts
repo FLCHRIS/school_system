@@ -1,7 +1,7 @@
+import { validateSchema } from "@/validations/validateSchema.validation";
+import { validateFile } from "@/validations/validateFile.validation";
 import { LoginSchema } from "@/auth/schemas/login.schema";
-import { validateSchema } from "@/utils/validateSchema";
-import { createResponse } from "@/utils/apiResponse";
-import { validateFile } from "@/utils/validateFile";
+import { createResponse } from "@/utils/apiResponse.util";
 import { Request, Response } from "express";
 import * as service from "@/auth/service";
 

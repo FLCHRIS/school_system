@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const allowRolesMiddleware = (roles: number[]) => {
   return (req: Request, _res: Response, next: NextFunction) => {

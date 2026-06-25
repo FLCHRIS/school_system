@@ -1,6 +1,6 @@
 import { STUDENT_STATUS } from "@/students/constants";
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const validateStudentCanEdit = (statusId: number) => {
   if (statusId === STUDENT_STATUS.GRADUATED) {

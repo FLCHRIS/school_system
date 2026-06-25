@@ -1,5 +1,5 @@
 import { PaginationSchema } from "@/schemas/pagination/pagination.schema";
-import { numberFilterSchema } from "@/utils/numberFilterSchema";
+import { numberFilterSchema } from "@/utils/numberFilterSchema.util";
 import { z } from "zod";
 
 export const StudentFiltersSchema = z.object({

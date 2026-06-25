@@ -4,12 +4,12 @@ import { QueryStudentDocumentSchema } from "@/students/schemas/queryStudentDocum
 import { buildStudentDocumentFilter } from "@/students/utils/buildStudentDocumentFilter";
 import { CreateStudentSchema } from "@/students/schemas/createStudent.schema";
 import { UpdateStudentSchema } from "@/students/schemas/updateStudent.schema";
+import { getPagination, buildPaginationMeta } from "@/utils/pagination.util";
 import { QueryStudentSchema } from "@/students/schemas/queryStudent.schema";
 import { buildStudentFilter } from "@/students/utils/buildStudentFilter";
-import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { validateSchema } from "@/utils/validateSchema";
-import { createResponse } from "@/utils/apiResponse";
-import { validateFile } from "@/utils/validateFile";
+import { validateSchema } from "@/validations/validateSchema.validation";
+import { validateFile } from "@/validations/validateFile.validation";
+import { createResponse } from "@/utils/apiResponse.util";
 import * as service from "@/students/service";
 import { Request, Response } from "express";
 

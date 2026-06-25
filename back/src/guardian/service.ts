@@ -1,19 +1,19 @@
 import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
 import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
+import { validateDocumentTypeCannotChange } from "@/validations/validateDocumentTypeMatches.validation";
 import { UpdateGuardianDocumentSchemaType } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
-import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
 import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
+import { validateEmailAvailable } from "@/validations/validateEmailAvailable.validation";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
-import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
+import * as cloudinaryService from "@/services/cloudinary.service";
 import { CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
-import * as cloudinaryService from "@/services/cloudinary";
+import { deleteTempFile } from "@/services/storage.service";
 import * as repository from "@/guardian/repository";
-import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
+import { logger } from "@/config/logger.config";
 import { UploadApiResponse } from "cloudinary";
-import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
 export const searchGuardians = async (

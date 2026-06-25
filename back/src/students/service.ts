@@ -5,21 +5,21 @@ import {
 import { validateStudentDocumentNotDuplicate } from "@/students/policies/validateStudentDocumentNotDuplicate.policy";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
 import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
+import { validateDocumentTypeCannotChange } from "@/validations/validateDocumentTypeMatches.validation";
 import { CreateStudentDocumentSchemaType } from "@/students/schemas/createStudentDocument.schema";
 import { UpdateStudentDocumentSchemaType } from "@/students/schemas/updateStudentDocument.schema";
-import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
 import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
-import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
+import { validateEmailAvailable } from "@/validations/validateEmailAvailable.validation";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
 import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import { SCHOOL_CODE, CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
-import * as cloudinaryService from "@/services/cloudinary";
+import * as cloudinaryService from "@/services/cloudinary.service";
+import { deleteTempFile } from "@/services/storage.service";
 import * as studentRepository from "@/students/repository";
 import * as guardianService from "@/guardian/service";
-import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
+import { logger } from "@/config/logger.config";
 import { UploadApiResponse } from "cloudinary";
-import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
 export const searchStudents = async (

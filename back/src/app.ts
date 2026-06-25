@@ -1,6 +1,6 @@
-import { errorMiddleware } from "@/middlewares/error.middlewares";
-import { logger } from "@/config/logger";
-import { env } from "@/config/env";
+import { errorMiddleware } from "@/middlewares/error.middleware";
+import { logger } from "@/config/logger.config";
+import { env } from "@/config/env.config";
 
 import guardiansRouter from "@/guardian/router";
 import studentsRouter from "@/students/router";

@@ -4,7 +4,7 @@ import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { isForeignKeyError } from "@/errors/prisma.error";
 import * as repository from "@/catalogs/repository";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 import { Prisma } from "@prisma/client";
 
 export const searchCatalogs = async (

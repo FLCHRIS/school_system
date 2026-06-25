@@ -1,6 +1,6 @@
 import * as repository from "@/catalogs/repository";
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const validateCatalogExists = async (catalogId: number) => {
   const data = await repository.getCatalog(catalogId);

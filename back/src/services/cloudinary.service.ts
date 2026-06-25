@@ -1,5 +1,5 @@
 import { ROOT_FOLDER_CLOUDINARY, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
-import { cloudinary } from "@/config/cloudinary";
+import { cloudinary } from "@/config/cloudinary.config";
 import { HttpError } from "@/errors/http.error";
 
 type FolderTypes =

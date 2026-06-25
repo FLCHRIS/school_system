@@ -1,6 +1,6 @@
-import { allowRolesMiddleware } from "@/middlewares/allowRoles.middlewares";
-import { uploadMiddleware } from "@/middlewares/upload.middlewares";
-import { authMiddleware } from "@/middlewares/auth.middlewares";
+import { allowRolesMiddleware } from "@/middlewares/allowRoles.middleware";
+import { uploadMiddleware } from "@/middlewares/upload.middleware";
+import { authMiddleware } from "@/middlewares/auth.middleware";
 import * as controller from "@/guardian/controller";
 import { USER_ROLES } from "@/constants";
 import { Router } from "express";

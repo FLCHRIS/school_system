@@ -1,6 +1,6 @@
 import { HttpError } from "@/errors/http.error";
-import { prisma } from "@/config/prisma";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
+import { prisma } from "@/config/prisma.config";
 
 export const validateEmailAvailable = async (email: string) => {
   const data = await prisma.contactInfo.findFirst({ where: { email } });

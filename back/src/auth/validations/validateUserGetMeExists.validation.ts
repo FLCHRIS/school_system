@@ -1,6 +1,6 @@
 import { HttpError } from "@/errors/http.error";
 import * as repository from "@/auth/repository";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const validateUserGetMeExists = async (userId: number) => {
   const data = await repository.findUserForGetMe(userId);

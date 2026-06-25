@@ -6,7 +6,7 @@ import { searchStudentQuery } from "@/students/queries/searchStudent";
 import { getStudentQuery } from "@/students/queries/getStudent";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { STUDENT_STATUS } from "@/students/constants";
-import { prisma } from "@/config/prisma";
+import { prisma } from "@/config/prisma.config";
 import { Prisma } from "@prisma/client";
 
 export const searchStudents = async (

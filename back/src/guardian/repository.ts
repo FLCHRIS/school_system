@@ -5,7 +5,7 @@ import { getGuardianDocumentQuery } from "@/guardian/queries/getGuardianDocument
 import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
 import { getGuardianQuery } from "@/guardian/queries/getGuardian";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
-import { prisma } from "@/config/prisma";
+import { prisma } from "@/config/prisma.config";
 import { Prisma } from "@prisma/client";
 
 export const searchGuardians = async (

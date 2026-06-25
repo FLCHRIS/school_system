@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+import { verifyToken } from "@/services/jwt.service";
 import { HttpError } from "@/errors/http.error";
-import { verifyToken } from "@/services/jwt";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const authMiddleware = (
   req: Request,

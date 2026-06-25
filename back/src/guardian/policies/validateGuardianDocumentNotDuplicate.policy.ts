@@ -1,6 +1,6 @@
 import * as repository from "@/guardian/repository";
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const validateGuardianDocumentNotDuplicate = async (
   guardianId: number,

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { createResponse } from "@/utils/apiResponse";
+import { createResponse } from "@/utils/apiResponse.util";
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const errorMiddleware = (
   error: Error,

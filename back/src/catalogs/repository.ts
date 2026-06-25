@@ -1,7 +1,7 @@
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { searchCatalogQuery } from "@/catalogs/queries/searchCatalog.query";
-import { prisma } from "@/config/prisma";
+import { prisma } from "@/config/prisma.config";
 import { Prisma } from "@prisma/client";
 
 export const searchCatalogs = async (

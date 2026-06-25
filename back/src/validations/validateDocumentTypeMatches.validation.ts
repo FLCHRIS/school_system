@@ -1,5 +1,5 @@
 import { HttpError } from "@/errors/http.error";
-import { logger } from "@/config/logger";
+import { logger } from "@/config/logger.config";
 
 export const validateDocumentTypeCannotChange = (
   currentTypeId: number,

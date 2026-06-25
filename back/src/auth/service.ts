@@ -1,19 +1,19 @@
-import { validateUserLogInExists } from "@/auth/validations/validateUserLoginExists.validation";
+import { validateUserLogInExists } from "@/auth/validations/validateUserLogInExists.validation";
 import { validateUserGetMeExists } from "@/auth/validations/validateUserGetMeExists.validation";
 import { validateUserExists } from "@/auth/validations/validateUserExists.validation";
-import { validateUserAccess } from "@/policies/validateUserAccess.policy";
+import { validateUserAccess } from "@/validations/validateUserAccess.validation";
+import * as cloudinaryService from "@/services/cloudinary.service";
 import { LoginSchemaType } from "@/auth/schemas/login.schema";
-import * as cloudinaryService from "@/services/cloudinary";
+import { comparePassword } from "@/services/bcrypt.service";
+import { deleteTempFile } from "@/services/storage.service";
+import { signAccessToken } from "@/services/jwt.service";
 import { STORAGE_FOLDER_CLOUDINARY } from "@/constants";
-import { comparePassword } from "@/services/bcrypt";
-import { deleteTempFile } from "@/services/storage";
 import { DecodedToken } from "@/types/auth.types";
-import { signAccessToken } from "@/services/jwt";
 import { HttpError } from "@/errors/http.error";
 import * as repository from "@/auth/repository";
+import { logger } from "@/config/logger.config";
 import { UploadApiResponse } from "cloudinary";
-import { logger } from "@/config/logger";
-import { env } from "@/config/env";
+import { env } from "@/config/env.config";
 
 export const logIn = async (schema: LoginSchemaType) => {
   const user = await validateUserLogInExists(schema.username);

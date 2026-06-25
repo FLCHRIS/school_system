@@ -5,11 +5,11 @@ import { buildGuardianDocumentFilter } from "@/guardian/utils/buildGuardianDocum
 import { CreateGuardianSchema } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchema } from "@/guardian/schemas/updateGuardian.schema";
 import { QueryGuardianSchema } from "@/guardian/schemas/queryGuardian.schema";
+import { getPagination, buildPaginationMeta } from "@/utils/pagination.util";
 import { buildGuardianFilter } from "@/guardian/utils/buildGuardianFilter";
-import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { validateSchema } from "@/utils/validateSchema";
-import { createResponse } from "@/utils/apiResponse";
-import { validateFile } from "@/utils/validateFile";
+import { validateSchema } from "@/validations/validateSchema.validation";
+import { validateFile } from "@/validations/validateFile.validation";
+import { createResponse } from "@/utils/apiResponse.util";
 import * as service from "@/guardian/service";
 import { Request, Response } from "express";
 

@@ -1,6 +1,6 @@
 import { HttpError } from "@/errors/http.error";
+import { logger } from "@/config/logger.config";
 import { USER_STATUS } from "@/constants";
-import { logger } from "@/config/logger";
 
 export const validateGuardianCanEdit = (statusId: number) => {
   if (statusId === USER_STATUS.SUSPENDED) {

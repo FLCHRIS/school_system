@@ -1,10 +1,10 @@
 import { CreateCatalogSchema } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchema } from "@/catalogs/schemas/updateCatalog.schema";
 import { buildCatalogFilter } from "@/catalogs/utils/buildCatalogFilter.util";
+import { getPagination, buildPaginationMeta } from "@/utils/pagination.util";
 import { QueryCatalogSchema } from "@/catalogs/schemas/queryCatalog.schema";
-import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { validateSchema } from "@/utils/validateSchema";
-import { createResponse } from "@/utils/apiResponse";
+import { validateSchema } from "@/validations/validateSchema.validation";
+import { createResponse } from "@/utils/apiResponse.util";
 import * as service from "@/catalogs/service";
 import { Request, Response } from "express";
 
