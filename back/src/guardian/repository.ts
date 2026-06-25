@@ -1,9 +1,9 @@
-import { searchGuardianDocumentQuery } from "@/guardian/queries/searchGuardianDocument";
+import { searchGuardianDocumentQuery } from "@/guardian/queries/searchGuardianDocument.query";
+import { getGuardianDocumentQuery } from "@/guardian/queries/getGuardianDocument.query";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
-import { getGuardianDocumentQuery } from "@/guardian/queries/getGuardianDocument";
-import { searchGuardianQuery } from "@/guardian/queries/searchGuardian";
-import { getGuardianQuery } from "@/guardian/queries/getGuardian";
+import { searchGuardianQuery } from "@/guardian/queries/searchGuardian.query";
+import { getGuardianQuery } from "@/guardian/queries/getGuardian.query";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { prisma } from "@/config/prisma.config";
 import { Prisma } from "@prisma/client";

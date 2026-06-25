@@ -1,9 +1,11 @@
-import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
+import { validateGuardianDocumentNotDuplicate } from "@/guardian/validations/validateGuardianDocumentNotDuplicate.validation";
+import { validateGuardianDocumentExists } from "@/guardian/validations/validateGuardianDocumentExists.validation";
 import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
 import { validateDocumentTypeCannotChange } from "@/validations/validateDocumentTypeMatches.validation";
 import { UpdateGuardianDocumentSchemaType } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
-import { validateGuardianCanEdit } from "@/guardian/policies/validateGuardianCanEdit.policy";
+import { validateGuardianCanEdit } from "@/guardian/validations/validateGuardianCanEdit.validation";
+import { validateGuardianExists } from "@/guardian/validations/validateGuardianExists.validation";
 import { validateEmailAvailable } from "@/validations/validateEmailAvailable.validation";
 import { CreateGuardianSchemaType } from "@/guardian/schemas/createGuardian.schema";
 import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.schema";
@@ -11,7 +13,6 @@ import * as cloudinaryService from "@/services/cloudinary.service";
 import { CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
 import { deleteTempFile } from "@/services/storage.service";
 import * as repository from "@/guardian/repository";
-import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger.config";
 import { UploadApiResponse } from "cloudinary";
 import { Prisma } from "@prisma/client";
@@ -29,7 +30,7 @@ export const searchGuardians = async (
 };
 
 export const searchGuardian = async (guardianId: number) => {
-  await existsGuardian(guardianId);
+  await validateGuardianExists(guardianId);
 
   const data = await repository.searchGuardian(guardianId);
 
@@ -54,7 +55,7 @@ export const updateGuardian = async (
   schema: UpdateGuardianSchemaType,
   guardianId: number
 ) => {
-  const guardian = await existsGuardian(guardianId);
+  const guardian = await validateGuardianExists(guardianId);
 
   const guardianStatusId = guardian.user.statusId;
   const oldEmail = guardian.user.contactInfo.email;
@@ -72,24 +73,13 @@ export const updateGuardian = async (
   return updatedGuardian;
 };
 
-export const existsGuardian = async (guardianId: number) => {
-  const data = await repository.getGuardian(guardianId);
-
-  if (!data) {
-    logger.warn(`[GUARDIAN] Tutor no encontrado - "${guardianId}"`);
-    throw new HttpError(404, "No encontrado", "Tutor no encontrado");
-  }
-
-  return data;
-};
-
 export const searchGuardianDocuments = async (
   guardianId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
   take: number
 ) => {
-  await existsGuardian(guardianId);
+  await validateGuardianExists(guardianId);
 
   const data = await repository.searchGuardianDocuments(
     guardianId,
@@ -113,7 +103,7 @@ export const createGuardianDocument = async (
   let newDocument: UploadApiResponse | null = null;
 
   try {
-    const guardian = await existsGuardian(guardianId);
+    const guardian = await validateGuardianExists(guardianId);
     validateGuardianCanEdit(guardian.user.statusId);
 
     await validateCatalogItemExists(
@@ -160,10 +150,13 @@ export const updateGuardianDocument = async (
   let newDocument: UploadApiResponse | null = null;
 
   try {
-    const guardian = await existsGuardian(guardianId);
+    const guardian = await validateGuardianExists(guardianId);
     validateGuardianCanEdit(guardian.user.statusId);
 
-    const oldDocument = await existsGuardianDocument(documentId, guardianId);
+    const oldDocument = await validateGuardianDocumentExists(
+      documentId,
+      guardianId
+    );
     await validateCatalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
       schema.documentTypeId
@@ -196,24 +189,4 @@ export const updateGuardianDocument = async (
   } finally {
     await deleteTempFile(pathImage);
   }
-};
-
-export const existsGuardianDocument = async (
-  guardianDocumentId: number,
-  guardianId: number
-) => {
-  const data = await repository.getGuardianDocument(
-    guardianDocumentId,
-    guardianId
-  );
-
-  if (!data) {
-    logger.warn(
-      `[GUARDIAN-DOCUMENT] Documento no encontrado - "${guardianDocumentId}"`
-    );
-
-    throw new HttpError(404, "No encontrado", "Documento no encontrado");
-  }
-
-  return data;
 };

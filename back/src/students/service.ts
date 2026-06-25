@@ -2,22 +2,24 @@ import {
   CreateStudentSchemaType,
   StudentWithExistingGuardianSchemaType,
 } from "@/students/schemas/createStudent.schema";
-import { validateStudentDocumentNotDuplicate } from "@/students/policies/validateStudentDocumentNotDuplicate.policy";
-import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
+import { validateStudentDocumentNotDuplicate } from "@/students/validations/validateStudentDocumentNotDuplicate.validation";
+import { validateGuardianCanBeAssigned } from "@/guardian/validations/validateGuardianCanBeAssigned.validation";
+import { validateStudentDocumentExists } from "@/students/validations/validateStudentDocumentExists.validation";
 import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
 import { validateDocumentTypeCannotChange } from "@/validations/validateDocumentTypeMatches.validation";
+import { validateGuardianExists } from "@/guardian/validations/validateGuardianExists.validation";
 import { CreateStudentDocumentSchemaType } from "@/students/schemas/createStudentDocument.schema";
 import { UpdateStudentDocumentSchemaType } from "@/students/schemas/updateStudentDocument.schema";
-import { validateStudentCanEdit } from "@/students/policies/validateStudentCanEdit.policy";
+import { validateStudentCanEdit } from "@/students/validations/validateStudentCanEdit.validation";
+import { validateStudentExists } from "@/students/validations/validateStudentExists.validation";
 import { validateEmailAvailable } from "@/validations/validateEmailAvailable.validation";
+import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment.util";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
-import { generateEnrollmentNumber } from "@/students/utils/generateEnrollment";
 import { SCHOOL_CODE, CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
 import * as cloudinaryService from "@/services/cloudinary.service";
 import { deleteTempFile } from "@/services/storage.service";
 import * as studentRepository from "@/students/repository";
 import * as guardianService from "@/guardian/service";
-import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger.config";
 import { UploadApiResponse } from "cloudinary";
 import { Prisma } from "@prisma/client";
@@ -35,7 +37,7 @@ export const searchStudents = async (
 };
 
 export const searchStudent = async (studentId: number) => {
-  await existsStudent(studentId);
+  await validateStudentExists(studentId);
 
   const data = await studentRepository.searchStudent(studentId);
 
@@ -52,7 +54,7 @@ export const createStudent = async (schema: CreateStudentSchemaType) => {
     const guardian = await guardianService.createGuardian(schema.guardian);
     guardianId = guardian.guardianId;
   } else {
-    const guardian = await guardianService.existsGuardian(schema.guardianId);
+    const guardian = await validateGuardianExists(schema.guardianId);
     validateGuardianCanBeAssigned(guardian.user.statusId);
     guardianId = schema.guardianId;
   }
@@ -80,7 +82,7 @@ export const updateStudent = async (
   schema: UpdateStudentSchemaType,
   studentId: number
 ) => {
-  const student = await existsStudent(studentId);
+  const student = await validateStudentExists(studentId);
 
   const studentStatusId = student.studentStatusId;
   const oldEmail = student.user.contactInfo.email;
@@ -89,7 +91,7 @@ export const updateStudent = async (
   validateStudentCanEdit(studentStatusId);
   if (newEmail !== oldEmail) await validateEmailAvailable(newEmail);
 
-  const guardian = await guardianService.existsGuardian(schema.guardianId);
+  const guardian = await validateGuardianExists(schema.guardianId);
   validateGuardianCanBeAssigned(guardian.user.statusId);
 
   const updatedStudent = await studentRepository.updateStudent(
@@ -104,24 +106,13 @@ export const updateStudent = async (
   return updatedStudent;
 };
 
-export const existsStudent = async (studentId: number) => {
-  const data = await studentRepository.getStudent(studentId);
-
-  if (!data) {
-    logger.warn(`[STUDENT] Estudiante no encontrado - "${studentId}"`);
-    throw new HttpError(404, "No encontrado", "Estudiante no encontrado");
-  }
-
-  return data;
-};
-
 export const searchStudentDocuments = async (
   studentId: number,
   filter: Prisma.CatalogItemWhereInput,
   skip: number,
   take: number
 ) => {
-  await existsStudent(studentId);
+  await validateStudentExists(studentId);
 
   const data = await studentRepository.searchStudentDocuments(
     studentId,
@@ -145,7 +136,7 @@ export const createStudentDocument = async (
   let newDocument: UploadApiResponse | null = null;
 
   try {
-    const student = await existsStudent(studentId);
+    const student = await validateStudentExists(studentId);
     validateStudentCanEdit(student.studentStatusId);
 
     await validateCatalogItemExists(
@@ -189,10 +180,13 @@ export const updateStudentDocument = async (
   let newDocument: UploadApiResponse | null = null;
 
   try {
-    const student = await existsStudent(studentId);
+    const student = await validateStudentExists(studentId);
     validateStudentCanEdit(student.studentStatusId);
 
-    const oldDocument = await existsStudentDocument(documentId, studentId);
+    const oldDocument = await validateStudentDocumentExists(
+      documentId,
+      studentId
+    );
     await validateCatalogItemExists(
       CATALOGS.STUDENT_DOCUMENT_TYPES,
       schema.documentTypeId
@@ -225,24 +219,4 @@ export const updateStudentDocument = async (
   } finally {
     await deleteTempFile(pathImage);
   }
-};
-
-export const existsStudentDocument = async (
-  studentDocumentId: number,
-  studentId: number
-) => {
-  const data = await studentRepository.getStudentDocument(
-    studentDocumentId,
-    studentId
-  );
-
-  if (!data) {
-    logger.warn(
-      `[STUDENT-DOCUMENT] Documento no encontrado - "${studentDocumentId}"`
-    );
-
-    throw new HttpError(404, "No encontrado", "Documento no encontrado");
-  }
-
-  return data;
 };

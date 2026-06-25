@@ -1,9 +1,9 @@
 import { StudentWithExistingGuardianSchemaType } from "@/students/schemas/createStudent.schema";
-import { searchStudentDocumentQuery } from "@/students/queries/searchStudentDocument";
+import { searchStudentDocumentQuery } from "@/students/queries/searchStudentDocument.query";
+import { getStudentDocumentQuery } from "@/students/queries/getStudentDocument.query";
 import { UpdateStudentSchemaType } from "@/students/schemas/updateStudent.schema";
-import { getStudentDocumentQuery } from "@/students/queries/getStudentDocument";
-import { searchStudentQuery } from "@/students/queries/searchStudent";
-import { getStudentQuery } from "@/students/queries/getStudent";
+import { searchStudentQuery } from "@/students/queries/searchStudent.query";
+import { getStudentQuery } from "@/students/queries/getStudent.query";
 import { USER_ROLES, USER_STATUS, CATALOGS } from "@/constants";
 import { STUDENT_STATUS } from "@/students/constants";
 import { prisma } from "@/config/prisma.config";
