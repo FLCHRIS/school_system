@@ -1,8 +1,9 @@
+import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
+import { validateCatalogExists } from "@/catalogs/validations/validateCatalogExists.validation";
 import { CreateCatalogSchemaType } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchemaType } from "@/catalogs/schemas/updateCatalog.schema";
 import { isForeignKeyError } from "@/errors/prisma.error";
 import * as repository from "@/catalogs/repository";
-import { HttpError } from "@/errors/http.error";
 import { logger } from "@/config/logger";
 import { Prisma } from "@prisma/client";
 
@@ -19,7 +20,7 @@ export const searchCatalogs = async (
 };
 
 export const getCatalogItems = async (catalogId: number) => {
-  await catalogExists(catalogId);
+  await validateCatalogExists(catalogId);
 
   const data = await repository.getCatalogItems(catalogId);
 
@@ -32,7 +33,7 @@ export const createCatalogItem = async (
   catalogId: number,
   schema: CreateCatalogSchemaType
 ) => {
-  await catalogExists(catalogId);
+  await validateCatalogExists(catalogId);
 
   await repository.createCatalogItem(catalogId, schema);
 
@@ -44,7 +45,7 @@ export const updateCatalogItem = async (
   catalogItemId: number,
   schema: UpdateCatalogSchemaType
 ) => {
-  await catalogItemExists(catalogId, catalogItemId);
+  await validateCatalogItemExists(catalogId, catalogItemId);
 
   await repository.updateCatalogItem(catalogItemId, schema);
 
@@ -55,7 +56,7 @@ export const deleteCatalogItem = async (
   catalogId: number,
   catalogItemId: number
 ) => {
-  await catalogItemExists(catalogId, catalogItemId);
+  await validateCatalogItemExists(catalogId, catalogItemId);
 
   try {
     await repository.deleteCatalogItem(catalogItemId);
@@ -67,26 +68,5 @@ export const deleteCatalogItem = async (
     await repository.inactivateCatalogItem(catalogItemId);
 
     logger.info(`[CATALOG] Catálogo inactivado - "${catalogItemId}"`);
-  }
-};
-
-export const catalogExists = async (catalogId: number) => {
-  const data = await repository.getCatalog(catalogId);
-
-  if (!data) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "${catalogId}"`);
-    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
-  }
-};
-
-export const catalogItemExists = async (
-  catalogId: number,
-  catalogItemId: number
-) => {
-  const data = await repository.getCatalogItem(catalogId, catalogItemId);
-
-  if (!data) {
-    logger.warn(`[CATALOG] Catálogo no encontrado - "catalog${catalogItemId}"`);
-    throw new HttpError(404, "No encontrado", "Catálogo no encontrado");
   }
 };

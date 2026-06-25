@@ -1,7 +1,7 @@
 import { CreateCatalogSchema } from "@/catalogs/schemas/createCatalog.schema";
 import { UpdateCatalogSchema } from "@/catalogs/schemas/updateCatalog.schema";
+import { buildCatalogFilter } from "@/catalogs/utils/buildCatalogFilter.util";
 import { QueryCatalogSchema } from "@/catalogs/schemas/queryCatalog.schema";
-import { buildCatalogFilter } from "@/catalogs/utils/buildCatalogFilter";
 import { getPagination, buildPaginationMeta } from "@/utils/pagination";
 import { validateSchema } from "@/utils/validateSchema";
 import { createResponse } from "@/utils/apiResponse";

@@ -1,4 +1,5 @@
 import { validateGuardianDocumentNotDuplicate } from "@/guardian/policies/validateGuardianDocumentNotDuplicate.policy";
+import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
 import { UpdateGuardianDocumentSchemaType } from "@/guardian/schemas/updateGuardianDocument.schema";
 import { CreateGuardianDocumentSchemaType } from "@/guardian/schemas/createGuardianDocument.schema";
 import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
@@ -8,7 +9,6 @@ import { UpdateGuardianSchemaType } from "@/guardian/schemas/updateGuardian.sche
 import { validateEmailAvailable } from "@/policies/validateEmailAvailable.policy";
 import { CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
 import * as cloudinaryService from "@/services/cloudinary";
-import * as catalogService from "@/catalogs/service";
 import * as repository from "@/guardian/repository";
 import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
@@ -116,7 +116,7 @@ export const createGuardianDocument = async (
     const guardian = await existsGuardian(guardianId);
     validateGuardianCanEdit(guardian.user.statusId);
 
-    await catalogService.catalogItemExists(
+    await validateCatalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
       schema.documentTypeId
     );
@@ -164,7 +164,7 @@ export const updateGuardianDocument = async (
     validateGuardianCanEdit(guardian.user.statusId);
 
     const oldDocument = await existsGuardianDocument(documentId, guardianId);
-    await catalogService.catalogItemExists(
+    await validateCatalogItemExists(
       CATALOGS.GUARDIAN_DOCUMENT_TYPES,
       schema.documentTypeId
     );

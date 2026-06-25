@@ -4,6 +4,7 @@ import {
 } from "@/students/schemas/createStudent.schema";
 import { validateStudentDocumentNotDuplicate } from "@/students/policies/validateStudentDocumentNotDuplicate.policy";
 import { validateGuardianCanBeAssigned } from "@/guardian/policies/validateGuardianCanBeAssigned.policy";
+import { validateCatalogItemExists } from "@/catalogs/validations/validateCatalogItemExists.validation";
 import { CreateStudentDocumentSchemaType } from "@/students/schemas/createStudentDocument.schema";
 import { UpdateStudentDocumentSchemaType } from "@/students/schemas/updateStudentDocument.schema";
 import { validateDocumentTypeCannotChange } from "@/policies/validateDocumentTypeMatches.policy";
@@ -15,7 +16,6 @@ import { SCHOOL_CODE, CATALOGS, STORAGE_FOLDER_CLOUDINARY } from "@/constants";
 import * as cloudinaryService from "@/services/cloudinary";
 import * as studentRepository from "@/students/repository";
 import * as guardianService from "@/guardian/service";
-import * as catalogService from "@/catalogs/service";
 import { deleteTempFile } from "@/services/storage";
 import { HttpError } from "@/errors/http.error";
 import { UploadApiResponse } from "cloudinary";
@@ -148,7 +148,7 @@ export const createStudentDocument = async (
     const student = await existsStudent(studentId);
     validateStudentCanEdit(student.studentStatusId);
 
-    await catalogService.catalogItemExists(
+    await validateCatalogItemExists(
       CATALOGS.STUDENT_DOCUMENT_TYPES,
       schema.documentTypeId
     );
@@ -193,7 +193,7 @@ export const updateStudentDocument = async (
     validateStudentCanEdit(student.studentStatusId);
 
     const oldDocument = await existsStudentDocument(documentId, studentId);
-    await catalogService.catalogItemExists(
+    await validateCatalogItemExists(
       CATALOGS.STUDENT_DOCUMENT_TYPES,
       schema.documentTypeId
     );
