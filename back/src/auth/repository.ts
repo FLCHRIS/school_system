@@ -1,6 +1,6 @@
-import { searchUserQuery } from "@/auth/queries/searchUser";
-import { logInUserQuery } from "@/auth/queries/logInUser";
-import { getUserQuery } from "@/auth/queries/getUser";
+import { searchUserQuery } from "@/auth/queries/searchUser.query";
+import { logInUserQuery } from "@/auth/queries/logInUser.query";
+import { getUserQuery } from "@/auth/queries/getUser.query";
 import { prisma } from "@/config/prisma";
 
 export const findUserForLogin = async (username: string) => {

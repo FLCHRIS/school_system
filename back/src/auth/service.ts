@@ -1,3 +1,6 @@
+import { validateUserLogInExists } from "@/auth/validations/validateUserLoginExists.validation";
+import { validateUserGetMeExists } from "@/auth/validations/validateUserGetMeExists.validation";
+import { validateUserExists } from "@/auth/validations/validateUserExists.validation";
 import { validateUserAccess } from "@/policies/validateUserAccess.policy";
 import { LoginSchemaType } from "@/auth/schemas/login.schema";
 import * as cloudinaryService from "@/services/cloudinary";
@@ -13,7 +16,7 @@ import { logger } from "@/config/logger";
 import { env } from "@/config/env";
 
 export const logIn = async (schema: LoginSchemaType) => {
-  const user = await userLoginExists(schema.username);
+  const user = await validateUserLogInExists(schema.username);
   validateUserAccess(user.statusId);
 
   if (!user.password || !user.username) {
@@ -41,7 +44,7 @@ export const logIn = async (schema: LoginSchemaType) => {
 };
 
 export const getMe = async (user: DecodedToken) => {
-  const data = await userGetMeExists(user.userId);
+  const data = await validateUserGetMeExists(user.userId);
 
   const statusId = data.status.catalogItemId;
   validateUserAccess(statusId);
@@ -55,7 +58,7 @@ export const updateProfilePhoto = async (pathImage: string, userId: number) => {
   let newProfilePhoto: UploadApiResponse | null = null;
 
   try {
-    await userExists(userId);
+    await validateUserExists(userId);
 
     const user = await repository.getUserProfilePhoto(userId);
     const oldProfilePhoto = user?.profilePhoto;
@@ -89,41 +92,4 @@ export const updateProfilePhoto = async (pathImage: string, userId: number) => {
   } finally {
     await deleteTempFile(pathImage);
   }
-};
-
-const userExists = async (userId: number) => {
-  const data = await repository.getUser(userId);
-
-  if (!data) {
-    logger.warn(`[AUTH] Usuario no encontrado - "${userId}"`);
-    throw new HttpError(401, "No autorizado", "Usuario no encontrado");
-  }
-
-  return data;
-};
-
-const userLoginExists = async (username: string) => {
-  const data = await repository.findUserForLogin(username);
-
-  if (!data) {
-    logger.warn(`[AUTH] Usuario no encontrado - "${username}"`);
-    throw new HttpError(401, "No autorizado", "Usuario no encontrado");
-  }
-
-  return data;
-};
-
-const userGetMeExists = async (userId: number) => {
-  const data = await repository.findUserForGetMe(userId);
-
-  if (!data) {
-    logger.warn(`[AUTH] Información de usuario no encontrada - "${userId}"`);
-    throw new HttpError(
-      401,
-      "No autorizado",
-      "Información de usuario no encontrada"
-    );
-  }
-
-  return data;
 };
