@@ -9,7 +9,8 @@
     "start": "node -r tsconfig-paths/register dist/index.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "format": "prettier --write src"
+    "format": "prettier --write src",
+    "format:file": "prettier --write"
   },
   "keywords": [],
   "author": "",
