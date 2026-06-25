@@ -3,6 +3,7 @@ import { logger } from "@/config/logger.config";
 import { env } from "@/config/env.config";
 
 import guardiansRouter from "@/guardian/router";
+import teachersRouter from "@/teachers/router";
 import studentsRouter from "@/students/router";
 import catalogsRouter from "@/catalogs/router";
 import authRoter from "@/auth/router";
@@ -32,6 +33,7 @@ app.use(
 app.use("/api/auth", authRoter);
 app.use("/api/catalogs", catalogsRouter);
 app.use("/api/students", studentsRouter);
+app.use("/api/teachers", teachersRouter);
 app.use("/api/guardians", guardiansRouter);
 
 app.use(errorMiddleware);
